@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIS Grade 9 Pathway Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<style>
+  html { scroll-behavior: smooth; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Poppins', sans-serif; background: #f5f2ec; color: #333; }
+
+  /* Edit mode visual affordances */
+  .ed-on .editable {
+    cursor: text;
+    border-radius: 3px;
+    transition: background 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.35);
+    background: rgba(255, 248, 212, 0.4);
+    padding: 1px 3px;
+    margin: -1px -3px;
+  }
+  .ed-on .editable:hover {
+    background: rgba(255, 248, 212, 0.85);
+    box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.7);
+  }
+  .ed-on .editable:focus {
+    background: #fffae6;
+    box-shadow: 0 0 0 2px #c9a84c;
+    outline: none;
+  }
+  .editable[contenteditable="true"] { white-space: pre-wrap; word-break: break-word; }
+
+  /* Edit mode toolbar */
+  .ed-toolbar {
+    position: fixed; top: 8px; right: 8px; z-index: 200;
+    display: flex; gap: 6px; align-items: center;
+    background: #0c2d54; border: 2px solid #c9a84c;
+    border-radius: 24px; padding: 4px 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    font-size: 12px; font-weight: 600;
+  }
+  .ed-toolbar button {
+    border: none; cursor: pointer;
+    padding: 6px 12px; border-radius: 18px;
+    font-family: inherit; font-size: 12px; font-weight: 600;
+    transition: background 0.15s, color 0.15s;
+  }
+  .ed-toolbar .pill-toggle {
+    background: #c9a84c; color: #0c2d54;
+  }
+  .ed-toolbar .pill-toggle.on { background: #fff; color: #0c2d54; }
+  .ed-toolbar .pill-save {
+    background: #fff; color: #0c2d54;
+  }
+  .ed-toolbar .pill-save:hover { background: #c9a84c; }
+  .ed-toolbar .pill-discard {
+    background: transparent; color: #fff;
+    border: 1px solid rgba(255,255,255,0.4);
+  }
+  .ed-toolbar .pill-discard:hover { border-color: #fff; }
+  .ed-toolbar .label {
+    color: #fff; padding: 0 8px; letter-spacing: 0.3px;
+  }
+  .ed-toolbar .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #c9a84c; margin: 0 4px;
+    box-shadow: 0 0 6px #c9a84c;
+  }
+  .ed-toolbar.collapsed { padding: 4px; }
+  .ed-toolbar.collapsed .pill-toggle { padding: 6px 10px; }
+
+  /* Help banner shown when first entering edit mode */
+  .ed-help {
+    position: fixed; top: 60px; right: 8px; z-index: 199;
+    max-width: 280px;
+    background: #fff; border: 1px solid #c9a84c;
+    border-radius: 10px; padding: 12px 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    font-size: 12px; line-height: 1.5; color: #333;
+  }
+  .ed-help h4 { margin: 0 0 6px; color: #0c2d54; font-size: 13px; }
+  .ed-help button {
+    margin-top: 8px; background: #0c2d54; color: #fff;
+    border: none; border-radius: 6px; padding: 6px 12px;
+    font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  }
+
+  /* Save toast */
+  .ed-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #0c2d54; color: #fff;
+    padding: 10px 18px; border-radius: 24px;
+    border: 1px solid #c9a84c;
+    font-size: 13px; font-weight: 600;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    z-index: 300;
+    animation: toastIn 0.3s ease;
+  }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+  /* Loading state */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; color: #0c2d54;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div id="root"><div class="loading">Loading…</div></div>
+
+<script id="ais-emblem" type="text/plain">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAFACAMAAAD6TlWYAAAB/lBMVEUtk6FVa1tpjWAeXnlgqJ7YqCYAGrKgkjaVpGYDo+SIp4r//3ZDfZoLf7///wDsxSDx/6z4/+AAf395cjuhvtetzcyfwNjErUQAO4c8gHuq/6ohZYbNfBVOp8ageUG/v3+/v78Afcjew0nA3NQAAAAAV5j8/f4ATY4EdZcQhq39xQH1ugJOibcmk7kIfaIveK/ppwHUhwIsmsQzhbD9/9qqqqralAPE1+fNewT///+41tG90+TimgCDrc0Fl8iQtdIJZpUYZ6J5psjX5O43pNALkrqoxdsAP39VlLbj7PNomsEAVaojbaVOeXFTlpHTti0uhZOueypweVYreom0zeCPqG6uqU+NekqKh0twmHGyiCsAAP8NjcPYpQ8Ho9K1lTK01sltpoxsh2lJiYnKqC8zdniUeTaPmFVThXZPo6+xtFC5exdEqtJilrvjiQDElihpmouUpVYAVf9lemh2pXS5pza5gxjLtkcAAH8yZ3WKlWgwqeTathuomUipqWistGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACTdYBsAAAAgHRSTlP///////8D/////wL/BAH/BjME//+j/////wP/////BAT//4sA/v/+//////////7/////OAP///8Bkf///////////////wT///8D////////////////////Af////+k//////////////////////8D//////8C/////////4fz0e8AAC4ISURBVHja7Z2JY9pIsv8Vxx5n8subnb3P936XhZARCMyssRcbJGRYIFwG42t8jO8jcWK/2MlMMkn+9dfV3RI6WkgIPBbZ7czExFziw7e6qquru7mZELfFr2Z++P3MV4thvkYuzPyez/xDlv8x83zx3wAD8xOEkBMML8DFfwI/ngeC/1z8N8Bg+uN5QjC8GuRCrj+dYGg1yIWfX7gJhhPg4n+b+YXairnw6y/cGgwjwJ7/GAMNcuOgvzBrkBsL/YVYg9x46C+8GuTC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</script>
+
+<script id="ais-site-data" type="application/json">
+{
+  "meta": {
+    "pageTitle": "AIS Grade 9 Pathway Hub",
+    "navTitle": "AIS Pathway Hub",
+    "navAbout": "About",
+    "navPathways": "Pathways",
+    "navJourney": "Journey",
+    "navSubjects": "Subjects",
+    "navFinder": "Pathway Finder",
+    "navEquivalency": "Equivalency",
+    "navFaq": "FAQ",
+    "navDates": "Dates",
+    "navContact": "Contact",
+    "navAskBtn": "Ask a Question"
+  },
+  "hero": {
+    "title": "Grade 9 Curriculum Pathway",
+    "subtitle": "Orientation Evening 2026",
+    "description": "Your guide to choosing between the British and American curriculum pathways at Al-Rowad International Schools",
+    "ctaPrimary": "Explore Pathways",
+    "ctaSecondary": "Take the Quiz"
+  },
+  "eventBanner": "📅 29 April 2026  |  🕐 5:00 – 7:30 PM  |  📍 AIS Campus",
+  "about": {
+    "sectionTitle": "About the Evening",
+    "sectionSub": "What to expect at the Orientation Evening",
+    "items": [
+      {
+        "time": "5:00 PM",
+        "heading": "Registration & Welcome",
+        "description": "Arrive at Gate 15. Student volunteers will guide you. Refreshments served."
+      },
+      {
+        "time": "5:30 PM",
+        "heading": "Curriculum Presentations",
+        "description": "Learn about both British and American pathways from our senior academic team."
+      },
+      {
+        "time": "5:50 PM",
+        "heading": "Q&A Session",
+        "description": "Ask questions about the curriculum and transition. Submit questions from your phone."
+      },
+      {
+        "time": "6:20 PM",
+        "heading": "Salah Break",
+        "description": "A break for prayer."
+      },
+      {
+        "time": "6:30 PM",
+        "heading": "Subject Teachers' Stalls",
+        "description": "Visit subject booths, speak with teachers and current students, explore options."
+      }
+    ]
+  },
+  "pathways": {
+    "sectionTitle": "British vs American Pathway",
+    "sectionSub": "Compare the two tracks side by side",
+    "headerBritish": "🇬🇧 British",
+    "headerAmerican": "🇺🇸 American",
+    "rows": [
+      {
+        "label": "Qualification",
+        "british": "Cambridge IGCSE + AS/A-Level",
+        "american": "American High School Diploma"
+      },
+      {
+        "label": "Duration",
+        "british": "IGCSE: 2 yrs (Gr 9–10)\nAS/A2: 2 yrs (Gr 11–12)",
+        "american": "4 years (Gr 9–12)"
+      },
+      {
+        "label": "Assessment",
+        "british": "External exams at end of Gr 10 and Gr 11/12",
+        "american": "Continuous + semester exams + optional SAT/ACT/AP"
+      },
+      {
+        "label": "Subjects at Gr 9",
+        "british": "8 IGCSE + 5 MoE subjects",
+        "american": "10–12 subjects per year"
+      },
+      {
+        "label": "Specialisation",
+        "british": "Narrows to 3–4 at A-Level",
+        "american": "Broad throughout, AP for depth"
+      },
+      {
+        "label": "Exam Boards",
+        "british": "Cambridge, Edexcel, Oxford AQA",
+        "american": "School-based + College Board (SAT/AP)"
+      },
+      {
+        "label": "Saudi University",
+        "british": "Accepted with mu'adala + GAT/SAAT",
+        "american": "Accepted with mu'adala + GAT/SAAT + EST"
+      }
+    ]
+  },
+  "journey": {
+    "sectionTitle": "Journey Map",
+    "sectionSub": "The full Grade 9 through Grade 12 progression",
+    "tabBritish": "🇬🇧 British",
+    "tabAmerican": "🇺🇸 American",
+    "british": [
+      {
+        "grade": "Grade 9",
+        "title": "IGCSE Year 1",
+        "desc": "Begin 8 IGCSE subjects + MoE subjects. Build foundational knowledge."
+      },
+      {
+        "grade": "Grade 10",
+        "title": "IGCSE Year 2 + Exams",
+        "desc": "Continue coursework. Sit external IGCSE examinations (April–June). Results determine A-Level eligibility."
+      },
+      {
+        "grade": "Grade 11",
+        "title": "AS-Level",
+        "desc": "Specialise in 3–4 subjects at advanced level. First year of A-Level programme."
+      },
+      {
+        "grade": "Grade 12",
+        "title": "A2-Level + Exams",
+        "desc": "Complete A-Level with A2 examinations. Final results for university applications."
+      }
+    ],
+    "american": [
+      {
+        "grade": "Grade 9",
+        "title": "Freshman Year",
+        "desc": "Begin earning credits: Algebra I, English, Sciences, Social Studies, electives."
+      },
+      {
+        "grade": "Grade 10",
+        "title": "Sophomore Year",
+        "desc": "Continue credits: Geometry, English, Sciences, World History, French/ICT."
+      },
+      {
+        "grade": "Grade 11",
+        "title": "Junior Year",
+        "desc": "Advanced courses: AP Calculus, AP Chemistry, AP Biology. Prepare for SAT/ACT."
+      },
+      {
+        "grade": "Grade 12",
+        "title": "Senior Year",
+        "desc": "Complete credits. EST (mandatory). AP exams. Graduate with High School Diploma."
+      }
+    ]
+  },
+  "subjects": {
+    "sectionTitle": "Subject Explorer",
+    "sectionSub": "Tap any subject to learn what it covers and where it leads",
+    "tabIgcse": "IGCSE",
+    "tabMoe": "MoE",
+    "tabAm": "American Gr 9",
+    "moeIntro": "Mandatory for all students as required by the Saudi Ministry of Education.",
+    "moeTotalLabel": "Total Weekly Periods",
+    "moeTotal": "40",
+    "viewSyllabus": "View full syllabus →",
+    "labelCode": "Code:",
+    "labelPeriods": "Periods:",
+    "labelCareers": "Career paths:",
+    "igcse": [
+      {
+        "name": "English (Second Language)",
+        "code": "0511 / 0991",
+        "periods": "4 (DD)",
+        "icon": "📝",
+        "desc": "Develop reading, writing, listening, and speaking skills for learners whose first language is not English.",
+        "careers": "Journalism, Law, International Business, Diplomacy"
+      },
+      {
+        "name": "Mathematics",
+        "code": "0580 / 0980",
+        "periods": "4 (DD)",
+        "icon": "📐",
+        "desc": "Covers number, algebra, geometry, statistics, and probability. Offered through both Cambridge and Edexcel.",
+        "careers": "Engineering, Finance, Data Science, Architecture"
+      },
+      {
+        "name": "Physics",
+        "code": "0625 / 0972",
+        "periods": "4 (DD)",
+        "icon": "⚡",
+        "desc": "Explore mechanics, waves, electricity, magnetism, and nuclear physics.",
+        "careers": "Engineering, Medicine, Research, Aerospace"
+      },
+      {
+        "name": "Chemistry",
+        "code": "0620 / 0971",
+        "periods": "4 (DD)",
+        "icon": "🧪",
+        "desc": "Study atomic structure, bonding, energetics, chemical reactions, and organic chemistry.",
+        "careers": "Medicine, Pharmacy, Chemical Engineering, Research"
+      },
+      {
+        "name": "Biology",
+        "code": "0610 / 0970",
+        "periods": "4 (DD)",
+        "icon": "🧬",
+        "desc": "Learn about cells, organisms, genetics, ecology, and human biology.",
+        "careers": "Medicine, Dentistry, Biotechnology, Environmental Science"
+      },
+      {
+        "name": "Arabic / Accounting",
+        "code": "0508/0452 / 0985",
+        "periods": "4 (DD)",
+        "icon": "📊",
+        "desc": "Choose Arabic Language or Accounting, covering financial statements, bookkeeping, and business finance.",
+        "careers": "Finance, Business Management, Translation, Public Sector"
+      },
+      {
+        "name": "ICT / Computer Science",
+        "code": "0417/0478",
+        "periods": "4 (DD)",
+        "icon": "💻",
+        "desc": "ICT covers practical digital literacy. Computer Science focuses on programming, algorithms, and computational thinking.",
+        "careers": "Software Development, Cybersecurity, AI, IT Management"
+      },
+      {
+        "name": "Business Studies",
+        "code": "0450 / 0986",
+        "periods": "3 (DS)",
+        "icon": "💼",
+        "desc": "Understand how businesses are organised, financed, and managed.",
+        "careers": "Business Management, Entrepreneurship, Marketing, Consulting"
+      }
+    ],
+    "moe": [
+      {
+        "name": "Arabic Language",
+        "periods": "1 (S)",
+        "icon": "🔤"
+      },
+      {
+        "name": "Islamic Studies",
+        "periods": "3 (SSS)",
+        "icon": "☪️"
+      },
+      {
+        "name": "Qur'an",
+        "periods": "2 (SS)",
+        "icon": "📖"
+      },
+      {
+        "name": "KSA History",
+        "periods": "2 (SS)",
+        "icon": "🏛️"
+      },
+      {
+        "name": "Physical Education",
+        "periods": "1 (S)",
+        "icon": "⚽"
+      }
+    ],
+    "american": [
+      {
+        "name": "Math (Algebra I)",
+        "icon": "📐",
+        "desc": "Foundation of high school mathematics."
+      },
+      {
+        "name": "English (Language + Literature)",
+        "icon": "📝",
+        "desc": "Integrated English developing analytical writing and literary analysis."
+      },
+      {
+        "name": "Sciences (Physical Sci / Physics / Chemistry / Biology)",
+        "icon": "🔬",
+        "desc": "Comprehensive science with hands-on lab work."
+      },
+      {
+        "name": "Business / Economics",
+        "icon": "💼",
+        "desc": "Business principles, economic systems, and financial literacy."
+      },
+      {
+        "name": "Arabic",
+        "icon": "🔤",
+        "desc": "Arabic language aligned with MoE requirements."
+      },
+      {
+        "name": "Social Studies",
+        "icon": "🌍",
+        "desc": "Society, government, and civic responsibility."
+      },
+      {
+        "name": "Islamic Studies",
+        "icon": "☪️",
+        "desc": "Islamic education aligned with MoE curriculum."
+      },
+      {
+        "name": "Computer Science",
+        "icon": "💻",
+        "desc": "Programming fundamentals and computational thinking."
+      },
+      {
+        "name": "PE",
+        "icon": "⚽",
+        "desc": "Physical education and health."
+      }
+    ]
+  },
+  "finder": {
+    "sectionTitle": "Pathway Finder",
+    "sectionSub": "Discover which pathway and subjects match your interests and learning style",
+    "introTitle": "AIS Pathway Finder",
+    "introDesc": "Answer 14 quick questions to discover which curriculum pathway and subjects best match your interests and learning style. Takes about 3–4 minutes.",
+    "introNote": "Informed by Holland's RIASEC Interest Model and the LASSI Learning Strategies Framework.",
+    "startButton": "Start the Quiz",
+    "part1Label": "Part 1 of 3: Your Interests",
+    "part2Label": "Part 2 of 3: Learning Style",
+    "part3Label": "Part 3 of 3: About You",
+    "part1Q": "Which activity would you enjoy more?",
+    "part2Q": "Which sounds more like you?",
+    "qNationality": "What is your nationality?",
+    "qUniversity": "Where do you plan to study at university?",
+    "qCareer": "Do you have a career field in mind?",
+    "qEquivalency": "How important is certificate equivalency for your home country?",
+    "questionLabel": "Question",
+    "ofLabel": "of",
+    "resultsTitle": "Your Results",
+    "pathwayFitLabel": "PATHWAY FIT",
+    "interestProfileLabel": "YOUR INTEREST PROFILE",
+    "suggestedSubjectsLabel": "SUGGESTED SUBJECTS",
+    "forCareerLabel": "FOR",
+    "keySubjectsLabel": "Key subjects:",
+    "equivalencyNoteLabel": "📋 EQUIVALENCY NOTE",
+    "equivalencyNoteText": "Certificate equivalency requirements apply for {nat} nationals. See the Equivalency section below or speak with the relevant Deputy Head.",
+    "disclaimer": "This is a starting point for your family's conversation, not a psychometric assessment. Please discuss with our academic team.",
+    "takeAgainBtn": "Take Again",
+    "resultStrongB": "The British pathway (IGCSE/A-Level) appears to be a strong fit for your learning style and goals.",
+    "resultLeanB": "The British pathway seems like a good fit, though the American pathway could also work well.",
+    "resultEither": "Both pathways could work well. We recommend discussing with our team during the orientation evening.",
+    "resultLeanA": "The American pathway seems like a good fit, though the British pathway could also work.",
+    "resultStrongA": "The American pathway (High School Diploma) appears to be a strong fit for your learning style and goals.",
+    "riasecLabels": {
+      "R": "Realistic",
+      "I": "Investigative",
+      "A": "Artistic",
+      "S": "Social",
+      "E": "Enterprising",
+      "C": "Conventional"
+    },
+    "riasecDesc": {
+      "R": "Hands-on work, building, and understanding how things function.",
+      "I": "Analytical problem-solving, research, and complex questions.",
+      "A": "Creative expression, writing, and producing original work.",
+      "S": "Helping others, teamwork, and positive impact on people.",
+      "E": "Leading, persuading, and taking initiative on projects.",
+      "C": "Working with data, systems, and organising information."
+    },
+    "riasecSubs": {
+      "R": "Physics, Chemistry",
+      "I": "Biology, Chemistry, Physics, Maths",
+      "A": "English, Arabic",
+      "S": "Business Studies, English",
+      "E": "Business Studies, Accounting",
+      "C": "ICT/Computer Science, Maths"
+    },
+    "riasecQs": [
+      {
+        "a": {
+          "t": "Build or fix something with your hands",
+          "th": "R"
+        },
+        "b": {
+          "t": "Research why something works the way it does",
+          "th": "I"
+        }
+      },
+      {
+        "a": {
+          "t": "Write a story or create something original",
+          "th": "A"
+        },
+        "b": {
+          "t": "Organise a team project and assign roles",
+          "th": "E"
+        }
+      },
+      {
+        "a": {
+          "t": "Help a classmate understand a difficult topic",
+          "th": "S"
+        },
+        "b": {
+          "t": "Work with spreadsheets, databases, or code",
+          "th": "C"
+        }
+      },
+      {
+        "a": {
+          "t": "Conduct a science experiment in a lab",
+          "th": "I"
+        },
+        "b": {
+          "t": "Start a small business or sell something",
+          "th": "E"
+        }
+      },
+      {
+        "a": {
+          "t": "Solve a complex math puzzle",
+          "th": "C"
+        },
+        "b": {
+          "t": "Design a great-looking poster or presentation",
+          "th": "A"
+        }
+      },
+      {
+        "a": {
+          "t": "Take apart a machine to see how it works",
+          "th": "R"
+        },
+        "b": {
+          "t": "Volunteer or help organise a school event",
+          "th": "S"
+        }
+      }
+    ],
+    "learnQs": [
+      {
+        "a": {
+          "t": "I do best preparing thoroughly for one important exam.",
+          "p": "B"
+        },
+        "b": {
+          "t": "I perform better with many smaller assignments and quizzes.",
+          "p": "A"
+        }
+      },
+      {
+        "a": {
+          "t": "I prefer studying fewer subjects in greater depth.",
+          "p": "B"
+        },
+        "b": {
+          "t": "I like learning about many different subjects.",
+          "p": "A"
+        }
+      },
+      {
+        "a": {
+          "t": "I like a clear syllabus and knowing exactly what's on the exam.",
+          "p": "B"
+        },
+        "b": {
+          "t": "I prefer flexibility, like projects and presentations.",
+          "p": "A"
+        }
+      },
+      {
+        "a": {
+          "t": "Working towards an internationally recognised certificate motivates me.",
+          "p": "B"
+        },
+        "b": {
+          "t": "Seeing my GPA grow each semester motivates me.",
+          "p": "A"
+        }
+      },
+      {
+        "a": {
+          "t": "I handle high-stakes exams well if I know what to expect.",
+          "p": "B"
+        },
+        "b": {
+          "t": "I'd rather not have marks depend on a few big exams.",
+          "p": "A"
+        }
+      }
+    ],
+    "natOpts": [
+      "Saudi Arabian",
+      "Jordanian",
+      "Egyptian",
+      "Palestinian",
+      "Syrian",
+      "Sudanese",
+      "Pakistani",
+      "Other Arab",
+      "Other"
+    ],
+    "uniOpts": [
+      {
+        "t": "UK, Australia, or Europe",
+        "a": "B"
+      },
+      {
+        "t": "United States or Canada",
+        "a": "A"
+      },
+      {
+        "t": "Saudi Arabia",
+        "a": null
+      },
+      {
+        "t": "Middle East (outside Saudi)",
+        "a": "B"
+      },
+      {
+        "t": "Not sure yet",
+        "a": null
+      }
+    ],
+    "carOpts": [
+      {
+        "t": "Medicine / Healthcare",
+        "s": "Biology, Chemistry, Physics"
+      },
+      {
+        "t": "Engineering / Technology",
+        "s": "Physics, Maths, ICT/CS"
+      },
+      {
+        "t": "Business / Finance",
+        "s": "Business Studies, Accounting, Maths"
+      },
+      {
+        "t": "Law / Government",
+        "s": "English, Business Studies"
+      },
+      {
+        "t": "Creative (Media, Design)",
+        "s": "English, ICT, Arabic"
+      },
+      {
+        "t": "Science / Research",
+        "s": "Biology, Chemistry, Physics, Maths"
+      },
+      {
+        "t": "I don't know yet",
+        "s": null
+      }
+    ],
+    "equivOpts": [
+      {
+        "t": "Essential for my child's future",
+        "v": "Essential"
+      },
+      {
+        "t": "Might be needed but not primary concern",
+        "v": "Maybe"
+      },
+      {
+        "t": "Not a concern; staying in Saudi Arabia",
+        "v": "No"
+      }
+    ]
+  },
+  "equivalency": {
+    "sectionTitle": "Certificate Equivalency Guide",
+    "sectionSub": "University recognition requirements by country",
+    "britishLabel": "🇬🇧 British Pathway",
+    "americanLabel": "🇺🇸 American Pathway",
+    "disclaimer": "Requirements may change. Verify directly with the respective Ministry of Education.",
+    "countries": {
+      "saudi": {
+        "flag": "🇸🇦",
+        "name": "Saudi Arabia",
+        "british": "IGCSE + AS/A-Level accepted with valid school accreditation. Must pass GAT (Qudrat) and SAAT (Tahsili). Arabic and Islamic Studies maintained throughout.",
+        "american": "High School Diploma accepted with mu'adala. Must pass EST (mandatory Gr 12). GAT and SAAT also required."
+      },
+      "jordan": {
+        "flag": "🇯🇴",
+        "name": "Jordan",
+        "british": "6 IGCSE (A–D) + 2 AS + 2 A2 or 3 AS + 1 A2. Arabic mandatory.",
+        "american": "6 EST (3 scientific, Math 2 required) or 3 EST + 1 AP. At least 3 years (G10–G12) in section."
+      },
+      "egypt": {
+        "flag": "🇪🇬",
+        "name": "Egypt",
+        "british": "8 IGCSE + 2 AS or 1 A-Level.",
+        "american": "ACT 1 or SAT 1 + 2 ACT (II)."
+      }
+    }
+  },
+  "faq": {
+    "sectionTitle": "Frequently Asked Questions",
+    "sectionSub": "Answers to the most common questions",
+    "items": [
+      {
+        "q": "Can my child switch pathways after starting Grade 9?",
+        "a": "Switching is possible but becomes difficult after the first term. The two pathways have different structures, assessment methods, and progression models. We strongly recommend making a well-informed choice before Grade 9."
+      },
+      {
+        "q": "Will my child get into a Saudi university with either pathway?",
+        "a": "Yes. Both pathways are recognised by Saudi universities with mu'adala. Students must maintain Arabic and Islamic Studies and sit the GAT (Qudrat) and SAAT (Tahsili) exams."
+      },
+      {
+        "q": "What equivalency does my Jordanian child need?",
+        "a": "British: 6 IGCSE subjects (A–D) + 2 AS + 2 A2 or 3 AS + 1 A2, Arabic mandatory.\nAmerican: 6 EST (3 scientific, Math 2 required) or 3 EST + 1 AP. At least 3 years (G10–G12) in the section."
+      },
+      {
+        "q": "What equivalency does my Egyptian child need?",
+        "a": "British: 8 IGCSE + 2 AS or 1 A-Level.\nAmerican: ACT1 or SAT 1 + 2 ACT (II). Confirm directly with the Egyptian Ministry of Education."
+      },
+      {
+        "q": "What's the difference between Cambridge and Edexcel?",
+        "a": "Both are internationally recognised UK exam boards. At AIS, Mathematics is offered through both. Both are equally valid for university admission."
+      },
+      {
+        "q": "Does my child need strong English for the British section?",
+        "a": "A reasonable level helps since IGCSE subjects are taught in English. However, English is taught as a Second Language (ESL), designed for non-native speakers with strong support."
+      },
+      {
+        "q": "How many subjects will my child study?",
+        "a": "British: 40-period week with 8 IGCSE + 5 MoE subjects.\nAmerican: 10–12 subjects per year, accumulating credits towards the diploma."
+      },
+      {
+        "q": "When are the IGCSE exams?",
+        "a": "Students entering Grade 9 in 2026–2027 will sit IGCSE exams in April–June 2028, at the end of Grade 10."
+      },
+      {
+        "q": "What happens after Grade 10?",
+        "a": "British: AS-Level (Gr 11) then A2 (Gr 12), specialising in 3–4 subjects.\nAmerican: Continue accumulating credits with optional AP courses in Gr 11–12."
+      },
+      {
+        "q": "Is there a placement test?",
+        "a": "Yes. Diagnostic assessments for all transitioning students. Not pass/fail. Dates communicated after the application deadline."
+      },
+      {
+        "q": "Who should I contact?",
+        "a": "British Boys: Mr. Tariq Saeed – t.saeed@ais.sch.sa\nBritish Girls: Ms. Malak Rajeh – m.alkhasawna@ais.sch.sa\nAmerican Boys: Mr. Mazen Sheikh Alardh – m.sheikhalardh@ais.sch.sa\nAmerican Girls: Ms. Nilofer Masoom – n.masoom@ais.sch.sa"
+      }
+    ]
+  },
+  "dates": {
+    "sectionTitle": "Key Dates",
+    "sectionSub": "Important dates for the transition process",
+    "items": [
+      {
+        "date": "29 April 2026",
+        "title": "Orientation Evening",
+        "description": "Pathway presentations, Q&A, and subject stalls"
+      },
+      {
+        "date": "TBC",
+        "title": "Application Deadline",
+        "description": "Submit the Grade 9 Application Form"
+      },
+      {
+        "date": "TBC",
+        "title": "Placement Tests",
+        "description": "Diagnostic assessments for all students"
+      },
+      {
+        "date": "TBC",
+        "title": "Feedback & Advice",
+        "description": "Personalised feedback sent via email"
+      },
+      {
+        "date": "TBC",
+        "title": "Final Selection",
+        "description": "Last date to confirm pathway choice"
+      }
+    ]
+  },
+  "ask": {
+    "title": "Have a Question?",
+    "description": "Submit before, during, or after the event. Our team will respond directly.",
+    "buttonText": "Submit a Question →",
+    "note": "Google Form link will be added here"
+  },
+  "contact": {
+    "sectionTitle": "Contact Us",
+    "sectionSub": "Reach out to the relevant Deputy Head",
+    "roleLabel": "Deputy Head of School",
+    "cards": [
+      {
+        "section": "British (Boys)",
+        "name": "Mr. Tariq Saeed",
+        "email": "t.saeed@ais.sch.sa",
+        "accent": "navy"
+      },
+      {
+        "section": "British (Girls)",
+        "name": "Ms. Malak Rajeh",
+        "email": "m.alkhasawna@ais.sch.sa",
+        "accent": "navy"
+      },
+      {
+        "section": "American (Boys)",
+        "name": "Mr. Mazen Sheikh Alardh",
+        "email": "m.sheikhalardh@ais.sch.sa",
+        "accent": "gold"
+      },
+      {
+        "section": "American (Girls)",
+        "name": "Ms. Nilofer Masoom",
+        "email": "n.masoom@ais.sch.sa",
+        "accent": "gold"
+      }
+    ]
+  },
+  "footer": {
+    "schoolName": "Al-Rowad International Schools",
+    "address": "An-Nuzhah, Riyadh 11673, KSA",
+    "contact": "info@ais.sch.sa  |  +966 9200 13260"
+  }
+}
+</script>
+
+<script type="text/babel" data-presets="env,react">
+(function () {
+  const { useState, useEffect, useRef, useContext, createContext, useMemo, useCallback } = React;
+
+  const NAVY = "#0c2d54", GOLD = "#c9a84c", LIGHT_BG = "#f5f2ec", LIGHT_GOLD = "#fdf6e3";
+
+  // ============ Event details (confirmed) ============
+  // Used by countdown + Add-to-Calendar. If date changes, update here.
+  const EVENT_START = new Date('2026-04-29T17:00:00+03:00'); // 5:00 PM Riyadh
+  const EVENT_END = new Date('2026-04-29T19:30:00+03:00');
+  const EVENT_TITLE = 'AIS Grade 9 Pathway Orientation Evening';
+  const EVENT_LOCATION = 'Al-Rowad International Schools, An-Nuzhah, Riyadh';
+  const EVENT_DESCRIPTION = "Curriculum pathway presentations, Q&A session, and subject teachers' stalls. Choose between British (IGCSE / A-Level) and American (High School Diploma) pathways.";
+
+  const EMBLEM_RAW = document.getElementById('ais-emblem').textContent.trim();
+  const EMBLEM = EMBLEM_RAW.startsWith('data:') ? EMBLEM_RAW : ('data:image/jpeg;base64,' + EMBLEM_RAW);
+
+  const INITIAL_DATA = JSON.parse(document.getElementById('ais-site-data').textContent);
+
+  // ============ Edit context ============
+  const EditCtx = createContext({ editing: false });
+
+  // ============ Editable wrapper ============
+  // - When not in edit mode: plain text node
+  // - In edit mode: contentEditable, dashed outline on hover, commits on blur
+  function Editable({ value, onChange, as = 'span', className = '', style, multiline = false, placeholder = '' }) {
+    const { editing } = useContext(EditCtx);
+    const ref = useRef(null);
+    const Tag = as;
+
+    // Sync DOM text from external value, but only when not focused
+    useEffect(() => {
+      if (!editing) return;
+      const el = ref.current;
+      if (!el) return;
+      if (document.activeElement === el) return;
+      const cur = el.innerText;
+      if (cur !== (value || '')) {
+        el.innerText = value || '';
+      }
+    });
+
+    if (!editing) {
+      // Render text with line breaks preserved if multiline
+      const text = value == null ? '' : String(value);
+      if (multiline) {
+        return React.createElement(Tag, { className, style }, text);
+      }
+      return React.createElement(Tag, { className, style }, text);
+    }
+
+    return React.createElement(Tag, {
+      ref,
+      className: (className + ' editable').trim(),
+      style,
+      contentEditable: true,
+      suppressContentEditableWarning: true,
+      'data-placeholder': placeholder,
+      onBlur: () => {
+        const v = ref.current.innerText;
+        if (v !== (value || '')) onChange(v);
+      },
+      onKeyDown: (e) => {
+        if (e.key === 'Enter' && !e.shiftKey && !multiline) {
+          e.preventDefault();
+          ref.current.blur();
+        }
+        // Esc: revert by blurring (we'll re-sync from value)
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          ref.current.innerText = value || '';
+          ref.current.blur();
+        }
+      },
+      onPaste: (e) => {
+        // Strip formatting on paste (avoid Word/Google Docs styles bleeding in)
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        if (document.queryCommandSupported && document.queryCommandSupported('insertText')) {
+          document.execCommand('insertText', false, text);
+        } else {
+          // Fallback: append at cursor via Selection API
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(document.createTextNode(text));
+            range.collapse(false);
+          }
+        }
+      }
+    });
+  }
+
+  // Helper: shallow update a path inside the data tree
+  function setAtPath(obj, path, value) {
+    if (path.length === 0) return value;
+    const [head, ...rest] = path;
+    const isArr = Array.isArray(obj);
+    const copy = isArr ? obj.slice() : { ...obj };
+    copy[head] = setAtPath(obj?.[head] ?? (typeof rest[0] === 'number' ? [] : {}), rest, value);
+    return copy;
+  }
+
+  // ============ Hexagon (RIASEC profile) ============
+  function Hex({ scores }) {
+    const th = ["R","I","A","S","E","C"];
+    const cx = 120, cy = 120, oR = 90, step = (Math.PI * 2) / 6;
+    const gp = (i, r) => { const a = -Math.PI / 2 + i * step; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+    const hp = th.map((_, i) => gp(i, oR).join(",")).join(" ");
+    const mp = th.map((_, i) => gp(i, oR * 0.5).join(",")).join(" ");
+    const dp = th.map((t, i) => gp(i, Math.max(oR * 0.15, (scores[t] / 2) * oR)).join(",")).join(" ");
+    return (
+      <svg viewBox="0 0 240 240" style={{ width: "100%", maxWidth: 240, margin: "0 auto", display: "block" }}>
+        <polygon points={hp} fill="none" stroke="#e0d8c8" strokeWidth="1" />
+        <polygon points={mp} fill="none" stroke="#e0d8c8" strokeWidth="0.5" strokeDasharray="3,3" />
+        {th.map((_, i) => { const [x, y] = gp(i, oR); return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#e0d8c8" strokeWidth="0.5" />; })}
+        <polygon points={dp} fill={`${GOLD}40`} stroke={GOLD} strokeWidth="2" />
+        {th.map((t, i) => { const [x, y] = gp(i, oR + 18); return <text key={t} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="11" fontWeight="700" fill={scores[t] >= 1 ? NAVY : "#aaa"}>{t}</text>; })}
+      </svg>
+    );
+  }
+
+  // ============ Pathway Finder ============
+  function PathwayFinder({ data, update }) {
+    const f = data.finder;
+    const [ph, setPh] = useState("intro");
+    const [rs, setRs] = useState(0);
+    const [rsc, setRsc] = useState({ R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 });
+    const [ls, setLs] = useState(0);
+    const [ps, setPs] = useState({ B: 0, A: 0 });
+    const [cs, setCs] = useState(0);
+    const [nat, setNat] = useState("");
+    const [car, setCar] = useState(null);
+
+    const total = 15;
+    const cur = ph === "riasec" ? rs + 1 : ph === "learn" ? 7 + ls : ph === "ctx" ? 12 + cs : 0;
+
+    const hR = (th) => { const n = { ...rsc, [th]: rsc[th] + 1 }; setRsc(n); if (rs + 1 >= f.riasecQs.length) { setPh("learn"); } else { setRs(rs + 1); } };
+    const hL = (p) => { const n = { ...ps, [p]: ps[p] + 2 }; setPs(n); if (ls + 1 >= f.learnQs.length) { setPh("ctx"); } else { setLs(ls + 1); } };
+    const hC = (v) => {
+      if (cs === 0) { setNat(v); setCs(1); }
+      else if (cs === 1) { const o = f.uniOpts.find(x => x.t === v); if (o?.a) setPs(p => ({ ...p, [o.a]: p[o.a] + 2 })); setCs(2); }
+      else if (cs === 2) { setCar(f.carOpts.find(c => c.t === v)); if (["Jordanian","Egyptian","Palestinian","Syrian"].includes(nat)) setCs(3); else setPh("result"); }
+      else if (cs === 3) { if (v === "Essential") setPs(p => ({ ...p, B: p.B + 1 })); setPh("result"); }
+    };
+    const reset = () => { setPh("intro"); setRs(0); setRsc({ R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }); setLs(0); setPs({ B: 0, A: 0 }); setCs(0); setNat(""); setCar(null); };
+
+    const card = { background: "#fff", borderRadius: 12, padding: 20, border: "1px solid #e0d8c8" };
+    const ob = (fn, txt, key) => (
+      <button key={key} onClick={fn} style={{ width: "100%", padding: "14px", background: LIGHT_GOLD, border: "1px solid #e0d8c8", borderRadius: 10, cursor: "pointer", textAlign: "left", fontSize: 14, color: NAVY, fontWeight: 500, marginBottom: 8 }}
+        onMouseEnter={e => { e.target.style.borderColor = GOLD; }}
+        onMouseLeave={e => { e.target.style.borderColor = "#e0d8c8"; }}>{txt}</button>
+    );
+
+    if (ph === "intro") return (
+      <div style={card}>
+        <Editable as="h3" value={f.introTitle} onChange={v => update(['finder', 'introTitle'], v)}
+          style={{ color: NAVY, margin: "0 0 8px", fontSize: 18 }} />
+        <Editable as="p" multiline value={f.introDesc} onChange={v => update(['finder', 'introDesc'], v)}
+          style={{ fontSize: 13, color: "#555", lineHeight: 1.6, margin: "0 0 12px" }} />
+        <Editable as="p" multiline value={f.introNote} onChange={v => update(['finder', 'introNote'], v)}
+          style={{ fontSize: 11, color: "#999", margin: "0 0 16px" }} />
+        <button onClick={() => setPh("riasec")} style={{ padding: "12px 28px", background: GOLD, color: NAVY, border: "none", borderRadius: 8, cursor: "pointer", fontSize: 15, fontWeight: 700 }}>
+          <Editable value={f.startButton} onChange={v => update(['finder', 'startButton'], v)} />
+        </button>
+      </div>
+    );
+
+    if (ph === "result") {
+      const tot = ps.B + ps.A; const bP = tot > 0 ? Math.round((ps.B / tot) * 100) : 50; const aP = 100 - bP;
+      const rec = bP >= 75 ? "resultStrongB" : bP >= 60 ? "resultLeanB" : bP >= 40 ? "resultEither" : bP >= 25 ? "resultLeanA" : "resultStrongA";
+      const top3 = Object.entries(rsc).sort((a, b) => b[1] - a[1]).filter(e => e[1] > 0).slice(0, 3);
+      const eqText = (f.equivalencyNoteText || '').replace('{nat}', nat);
+      return (
+        <div style={card}>
+          <Editable as="h3" value={f.resultsTitle} onChange={v => update(['finder', 'resultsTitle'], v)}
+            style={{ color: NAVY, margin: "0 0 16px", fontSize: 18 }} />
+          <Editable as="p" value={f.pathwayFitLabel} onChange={v => update(['finder', 'pathwayFitLabel'], v)}
+            style={{ fontSize: 12, color: "#888", margin: "0 0 6px", fontWeight: 600 }} />
+          <div style={{ display: "flex", gap: 4, marginBottom: 8, height: 36, borderRadius: 8, overflow: "hidden" }}>
+            <div style={{ width: `${Math.max(bP, 10)}%`, background: NAVY, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 700 }}>🇬🇧 {bP}%</div>
+            <div style={{ width: `${Math.max(aP, 10)}%`, background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", color: NAVY, fontSize: 12, fontWeight: 700 }}>🇺🇸 {aP}%</div>
+          </div>
+          <Editable as="p" multiline value={f[rec]} onChange={v => update(['finder', rec], v)}
+            style={{ fontSize: 14, color: "#333", lineHeight: 1.6, margin: "0 0 20px" }} />
+          <Editable as="p" value={f.interestProfileLabel} onChange={v => update(['finder', 'interestProfileLabel'], v)}
+            style={{ fontSize: 12, color: "#888", margin: "0 0 10px", fontWeight: 600 }} />
+          <Hex scores={rsc} />
+          <div style={{ marginTop: 12 }}>{top3.map(([t]) => (
+            <div key={t} style={{ marginBottom: 8, padding: "8px 10px", background: LIGHT_GOLD, borderRadius: 8, borderLeft: `3px solid ${GOLD}` }}>
+              <Editable value={f.riasecLabels[t]} onChange={v => update(['finder', 'riasecLabels', t], v)}
+                style={{ fontWeight: 700, color: NAVY, fontSize: 13 }} />
+              <Editable as="p" multiline value={f.riasecDesc[t]} onChange={v => update(['finder', 'riasecDesc', t], v)}
+                style={{ fontSize: 12, color: "#555", margin: "2px 0 0" }} />
+            </div>
+          ))}</div>
+          {top3.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <Editable as="p" value={f.suggestedSubjectsLabel} onChange={v => update(['finder', 'suggestedSubjectsLabel'], v)}
+                style={{ fontSize: 12, color: "#888", margin: "0 0 8px", fontWeight: 600 }} />
+              <p style={{ fontSize: 13, color: "#333", margin: 0 }}>{top3.map(([t]) => f.riasecSubs[t]).join(", ")}</p>
+            </div>
+          )}
+          {car?.s && (
+            <div style={{ marginTop: 12 }}>
+              <p style={{ fontSize: 12, color: "#888", margin: "0 0 4px", fontWeight: 600 }}>{f.forCareerLabel} {car.t.toUpperCase()}</p>
+              <p style={{ fontSize: 13, color: "#333", margin: 0 }}><Editable value={f.keySubjectsLabel} onChange={v => update(['finder', 'keySubjectsLabel'], v)} /> {car.s}</p>
+            </div>
+          )}
+          {["Jordanian","Egyptian","Palestinian","Syrian"].includes(nat) && (
+            <div style={{ marginTop: 16, padding: 12, background: "#fff8eb", borderRadius: 8, border: `1px solid ${GOLD}40` }}>
+              <Editable as="p" value={f.equivalencyNoteLabel} onChange={v => update(['finder', 'equivalencyNoteLabel'], v)}
+                style={{ fontSize: 12, color: GOLD, fontWeight: 700, margin: "0 0 4px" }} />
+              <p style={{ fontSize: 12, color: "#555", margin: 0, lineHeight: 1.5 }}>{eqText}</p>
+            </div>
+          )}
+          <Editable as="p" multiline value={f.disclaimer} onChange={v => update(['finder', 'disclaimer'], v)}
+            style={{ fontSize: 11, color: "#999", fontStyle: "italic", marginTop: 16, lineHeight: 1.5 }} />
+          <button onClick={reset} style={{ marginTop: 12, padding: "10px 20px", background: NAVY, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>
+            <Editable value={f.takeAgainBtn} onChange={v => update(['finder', 'takeAgainBtn'], v)} />
+          </button>
+        </div>
+      );
+    }
+
+    const pPct = (cur / total) * 100;
+    let label = "", q = "", opts = [];
+    if (ph === "riasec") {
+      label = f.part1Label; q = f.part1Q;
+      const qd = f.riasecQs[rs];
+      opts = [{ t: qd.a.t, fn: () => hR(qd.a.th), path: ['finder', 'riasecQs', rs, 'a', 't'] },
+              { t: qd.b.t, fn: () => hR(qd.b.th), path: ['finder', 'riasecQs', rs, 'b', 't'] }];
+    }
+    else if (ph === "learn") {
+      label = f.part2Label; q = f.part2Q;
+      const qd = f.learnQs[ls];
+      opts = [{ t: qd.a.t, fn: () => hL(qd.a.p), path: ['finder', 'learnQs', ls, 'a', 't'] },
+              { t: qd.b.t, fn: () => hL(qd.b.p), path: ['finder', 'learnQs', ls, 'b', 't'] }];
+    }
+    else if (ph === "ctx") {
+      label = f.part3Label;
+      if (cs === 0) { q = f.qNationality; opts = f.natOpts.map((n, i) => ({ t: n, fn: () => hC(n), path: ['finder', 'natOpts', i] })); }
+      else if (cs === 1) { q = f.qUniversity; opts = f.uniOpts.map((o, i) => ({ t: o.t, fn: () => hC(o.t), path: ['finder', 'uniOpts', i, 't'] })); }
+      else if (cs === 2) { q = f.qCareer; opts = f.carOpts.map((c, i) => ({ t: c.t, fn: () => hC(c.t), path: ['finder', 'carOpts', i, 't'] })); }
+      else { q = f.qEquivalency; opts = f.equivOpts.map((o, i) => ({ t: o.t, fn: () => hC(o.v), path: ['finder', 'equivOpts', i, 't'] })); }
+    }
+
+    const partLabelPath = ph === "riasec" ? ['finder', 'part1Label'] : ph === "learn" ? ['finder', 'part2Label'] : ['finder', 'part3Label'];
+    const qPath = ph === "riasec" ? ['finder', 'part1Q'] : ph === "learn" ? ['finder', 'part2Q'] :
+                  cs === 0 ? ['finder', 'qNationality'] : cs === 1 ? ['finder', 'qUniversity'] :
+                  cs === 2 ? ['finder', 'qCareer'] : ['finder', 'qEquivalency'];
+
+    return (
+      <div style={card}>
+        <div style={{ height: 4, background: "#e0d8c8", borderRadius: 2, marginBottom: 12, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${pPct}%`, background: GOLD, borderRadius: 2, transition: "width 0.3s" }} />
+        </div>
+        <Editable as="p" value={label} onChange={v => update(partLabelPath, v)}
+          style={{ fontSize: 11, color: GOLD, fontWeight: 600, margin: "0 0 2px" }} />
+        <p style={{ fontSize: 11, color: "#aaa", margin: "0 0 12px" }}>{f.questionLabel} {cur} {f.ofLabel} {total}</p>
+        <Editable as="h3" multiline value={q} onChange={v => update(qPath, v)}
+          style={{ color: NAVY, margin: "0 0 14px", fontSize: 16, lineHeight: 1.4 }} />
+        {opts.map((o, i) => (
+          <div key={i}>
+            <button onClick={o.fn} style={{ width: "100%", padding: "14px", background: LIGHT_GOLD, border: "1px solid #e0d8c8", borderRadius: 10, cursor: "pointer", textAlign: "left", fontSize: 14, color: NAVY, fontWeight: 500, marginBottom: 8 }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#e0d8c8"; }}>
+              <Editable value={o.t} onChange={v => update(o.path, v)} />
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ============ Journey Map ============
+  function JourneyMap({ data, update }) {
+    const [track, setTrack] = useState("british");
+    const j = data.journey;
+    const items = track === "british" ? j.british : j.american;
+    const ts = (a) => ({ padding: "8px 20px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: a ? NAVY : "transparent", color: a ? "#fff" : NAVY });
+    return (
+      <div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          <button style={ts(track === "british")} onClick={() => setTrack("british")}>
+            <Editable value={j.tabBritish} onChange={v => update(['journey', 'tabBritish'], v)} />
+          </button>
+          <button style={ts(track === "american")} onClick={() => setTrack("american")}>
+            <Editable value={j.tabAmerican} onChange={v => update(['journey', 'tabAmerican'], v)} />
+          </button>
+        </div>
+        <div style={{ position: "relative", paddingLeft: 28 }}>
+          <div style={{ position: "absolute", left: 10, top: 8, bottom: 8, width: 3, background: `linear-gradient(to bottom, ${GOLD}, ${NAVY})`, borderRadius: 2 }} />
+          {items.map((item, i) => {
+            const color = i < 2 ? GOLD : NAVY;
+            return (
+              <div key={i} style={{ position: "relative", marginBottom: 16 }}>
+                <div style={{ position: "absolute", left: -23, top: 6, width: 14, height: 14, borderRadius: "50%", background: color, border: `2px solid ${color === GOLD ? NAVY : GOLD}` }} />
+                <div style={{ background: "#fff", borderRadius: 10, padding: 14, border: "1px solid #e0d8c8", borderLeft: `4px solid ${color}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, gap: 8, flexWrap: "wrap" }}>
+                    <Editable value={item.grade} onChange={v => update(['journey', track, i, 'grade'], v)}
+                      style={{ fontSize: 12, fontWeight: 700, color }} />
+                    <Editable value={item.title} onChange={v => update(['journey', track, i, 'title'], v)}
+                      style={{ fontSize: 13, fontWeight: 700, color: NAVY }} />
+                  </div>
+                  <Editable as="p" multiline value={item.desc} onChange={v => update(['journey', track, i, 'desc'], v)}
+                    style={{ margin: 0, fontSize: 13, color: "#555", lineHeight: 1.5 }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ============ Subject Explorer ============
+  function SubjectExplorer({ data, update }) {
+    const s = data.subjects;
+    const [tab, setTab] = useState("igcse");
+    const [exp, setExp] = useState(null);
+    const ts = (a) => ({ padding: "8px 16px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: a ? NAVY : "transparent", color: a ? "#fff" : NAVY });
+    return (
+      <div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+          <button style={ts(tab === "igcse")} onClick={() => { setTab("igcse"); setExp(null); }}>
+            <Editable value={s.tabIgcse} onChange={v => update(['subjects', 'tabIgcse'], v)} />
+          </button>
+          <button style={ts(tab === "moe")} onClick={() => { setTab("moe"); setExp(null); }}>
+            <Editable value={s.tabMoe} onChange={v => update(['subjects', 'tabMoe'], v)} />
+          </button>
+          <button style={ts(tab === "am")} onClick={() => { setTab("am"); setExp(null); }}>
+            <Editable value={s.tabAm} onChange={v => update(['subjects', 'tabAm'], v)} />
+          </button>
+        </div>
+        {tab === "igcse" && s.igcse.map((sub, i) => (
+          <div key={i} style={{ marginBottom: 8, border: "1px solid #e0d8c8", borderRadius: 10, overflow: "hidden", background: "#fff" }}>
+            <div style={{ width: "100%", padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setExp(exp === i ? null : i)}>
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 20 }}>{sub.icon}</span>
+                <Editable value={sub.name} onChange={v => update(['subjects', 'igcse', i, 'name'], v)}
+                  style={{ fontWeight: 600, color: NAVY, fontSize: 14 }} />
+              </span>
+              <span style={{ color: GOLD, fontSize: 18, transform: exp === i ? "rotate(45deg)" : "none", transition: "transform 0.2s" }}>+</span>
+            </div>
+            {exp === i && (
+              <div style={{ padding: "0 14px 14px", borderTop: "1px solid #f0e8d8" }}>
+                <Editable as="p" multiline value={sub.desc} onChange={v => update(['subjects', 'igcse', i, 'desc'], v)}
+                  style={{ fontSize: 13, color: "#555", margin: "8px 0", lineHeight: 1.6 }} />
+                <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12 }}>
+                  <span style={{ color: NAVY }}><strong><Editable value={s.labelCode} onChange={v => update(['subjects', 'labelCode'], v)} /></strong>{' '}<Editable value={sub.code} onChange={v => update(['subjects', 'igcse', i, 'code'], v)} /></span>
+                  <span style={{ color: NAVY }}><strong><Editable value={s.labelPeriods} onChange={v => update(['subjects', 'labelPeriods'], v)} /></strong>{' '}<Editable value={sub.periods} onChange={v => update(['subjects', 'igcse', i, 'periods'], v)} /></span>
+                </div>
+                <p style={{ fontSize: 12, color: GOLD, fontWeight: 600, marginTop: 8, marginBottom: 0 }}>
+                  <Editable value={s.labelCareers} onChange={v => update(['subjects', 'labelCareers'], v)} />{' '}
+                  <Editable value={sub.careers} onChange={v => update(['subjects', 'igcse', i, 'careers'], v)} />
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+        {tab === "moe" && (
+          <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e0d8c8", padding: 16 }}>
+            <Editable as="p" multiline value={s.moeIntro} onChange={v => update(['subjects', 'moeIntro'], v)}
+              style={{ fontSize: 13, color: "#555", marginTop: 0, lineHeight: 1.6 }} />
+            {s.moe.map((sub, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < s.moe.length - 1 ? "1px solid #f0e8d8" : "none" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 18 }}>{sub.icon}</span>
+                  <Editable value={sub.name} onChange={v => update(['subjects', 'moe', i, 'name'], v)}
+                    style={{ fontWeight: 600, color: NAVY, fontSize: 14 }} />
+                </span>
+                <Editable value={sub.periods} onChange={v => update(['subjects', 'moe', i, 'periods'], v)}
+                  style={{ color: "#888", fontSize: 13 }} />
+              </div>
+            ))}
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", marginTop: 8, borderTop: `2px solid ${GOLD}` }}>
+              <Editable value={s.moeTotalLabel} onChange={v => update(['subjects', 'moeTotalLabel'], v)}
+                style={{ fontWeight: 700, color: NAVY }} />
+              <Editable value={s.moeTotal} onChange={v => update(['subjects', 'moeTotal'], v)}
+                style={{ fontWeight: 700, color: GOLD }} />
+            </div>
+          </div>
+        )}
+        {tab === "am" && s.american.map((sub, i) => (
+          <div key={i} style={{ marginBottom: 8, border: "1px solid #e0d8c8", borderRadius: 10, overflow: "hidden", background: "#fff" }}>
+            <div style={{ width: "100%", padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setExp(exp === `a${i}` ? null : `a${i}`)}>
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 20 }}>{sub.icon}</span>
+                <Editable value={sub.name} onChange={v => update(['subjects', 'american', i, 'name'], v)}
+                  style={{ fontWeight: 600, color: NAVY, fontSize: 14 }} />
+              </span>
+              <span style={{ color: GOLD, fontSize: 18, transform: exp === `a${i}` ? "rotate(45deg)" : "none", transition: "transform 0.2s" }}>+</span>
+            </div>
+            {exp === `a${i}` && (
+              <div style={{ padding: "0 14px 14px", borderTop: "1px solid #f0e8d8" }}>
+                <Editable as="p" multiline value={sub.desc} onChange={v => update(['subjects', 'american', i, 'desc'], v)}
+                  style={{ fontSize: 13, color: "#555", margin: "8px 0", lineHeight: 1.6 }} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ============ Pathway Comparison ============
+  function PathwayComparison({ data, update }) {
+    const p = data.pathways;
+    return (
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 580 }}>
+          <thead>
+            <tr>
+              <th style={{ padding: "12px 10px", background: NAVY, color: "#fff", textAlign: "left", width: "20%" }}></th>
+              <th style={{ padding: "12px 10px", background: NAVY, color: GOLD, textAlign: "left", fontWeight: 700 }}>
+                <Editable value={p.headerBritish} onChange={v => update(['pathways', 'headerBritish'], v)} />
+              </th>
+              <th style={{ padding: "12px 10px", background: NAVY, color: GOLD, textAlign: "left", fontWeight: 700 }}>
+                <Editable value={p.headerAmerican} onChange={v => update(['pathways', 'headerAmerican'], v)} />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {p.rows.map((r, i) => (
+              <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : LIGHT_GOLD }}>
+                <td style={{ padding: "10px", fontWeight: 700, color: NAVY, verticalAlign: "top", borderBottom: "1px solid #e8e0d0" }}>
+                  <Editable value={r.label} onChange={v => update(['pathways', 'rows', i, 'label'], v)} />
+                </td>
+                <td style={{ padding: "10px", color: "#333", verticalAlign: "top", borderBottom: "1px solid #e8e0d0", whiteSpace: "pre-line", lineHeight: 1.5 }}>
+                  <Editable as="span" multiline value={r.british} onChange={v => update(['pathways', 'rows', i, 'british'], v)} />
+                </td>
+                <td style={{ padding: "10px", color: "#333", verticalAlign: "top", borderBottom: "1px solid #e8e0d0", whiteSpace: "pre-line", lineHeight: 1.5 }}>
+                  <Editable as="span" multiline value={r.american} onChange={v => update(['pathways', 'rows', i, 'american'], v)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // ============ Equivalency Guide ============
+  function EquivalencyGuide({ data, update }) {
+    const e = data.equivalency;
+    const [c, setC] = useState("saudi");
+    const v = e.countries[c];
+    return (
+      <div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          {Object.entries(e.countries).map(([k, val]) => (
+            <button key={k} onClick={() => setC(k)} style={{ flex: 1, padding: "10px 8px", borderRadius: 8, border: c === k ? `2px solid ${GOLD}` : "1px solid #e0d8c8", background: c === k ? LIGHT_GOLD : "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600, color: NAVY }}>
+              {val.flag} <Editable value={val.name} onChange={vv => update(['equivalency', 'countries', k, 'name'], vv)} />
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "grid", gap: 12 }}>
+          <div style={{ background: "#fff", borderRadius: 10, padding: 16, border: "1px solid #e0d8c8", borderLeft: `4px solid ${NAVY}` }}>
+            <Editable as="h4" value={e.britishLabel} onChange={vv => update(['equivalency', 'britishLabel'], vv)}
+              style={{ color: NAVY, margin: "0 0 8px", fontSize: 14 }} />
+            <Editable as="p" multiline value={v.british} onChange={vv => update(['equivalency', 'countries', c, 'british'], vv)}
+              style={{ fontSize: 13, color: "#444", margin: 0, lineHeight: 1.6 }} />
+          </div>
+          <div style={{ background: "#fff", borderRadius: 10, padding: 16, border: "1px solid #e0d8c8", borderLeft: `4px solid ${GOLD}` }}>
+            <Editable as="h4" value={e.americanLabel} onChange={vv => update(['equivalency', 'americanLabel'], vv)}
+              style={{ color: NAVY, margin: "0 0 8px", fontSize: 14 }} />
+            <Editable as="p" multiline value={v.american} onChange={vv => update(['equivalency', 'countries', c, 'american'], vv)}
+              style={{ fontSize: 13, color: "#444", margin: 0, lineHeight: 1.6 }} />
+          </div>
+        </div>
+        <Editable as="p" multiline value={e.disclaimer} onChange={vv => update(['equivalency', 'disclaimer'], vv)}
+          style={{ fontSize: 11, color: "#999", marginTop: 12, fontStyle: "italic" }} />
+      </div>
+    );
+  }
+
+  // ============ FAQ ============
+  function FAQ({ data, update }) {
+    const [o, setO] = useState(null);
+    return (
+      <div>{data.faq.items.map((item, i) => (
+        <div key={i} style={{ marginBottom: 6, border: "1px solid #e0d8c8", borderRadius: 10, overflow: "hidden", background: "#fff" }}>
+          <div style={{ width: "100%", padding: "14px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, cursor: "pointer" }} onClick={() => setO(o === i ? null : i)}>
+            <Editable as="span" value={item.q} onChange={v => update(['faq', 'items', i, 'q'], v)}
+              style={{ fontWeight: 600, color: NAVY, fontSize: 14, lineHeight: 1.4, flex: 1 }} />
+            <span style={{ color: GOLD, fontSize: 20, lineHeight: 1, flexShrink: 0, transform: o === i ? "rotate(45deg)" : "none", transition: "transform 0.2s" }}>+</span>
+          </div>
+          {o === i && (
+            <div style={{ padding: "0 14px 14px", borderTop: "1px solid #f0e8d8" }}>
+              <Editable as="p" multiline value={item.a} onChange={v => update(['faq', 'items', i, 'a'], v)}
+                style={{ fontSize: 13, color: "#444", margin: "10px 0 0", lineHeight: 1.7 }} />
+            </div>
+          )}
+        </div>
+      ))}</div>
+    );
+  }
+
+  // ============ Nav ============
+  function NavBar({ data, update, activeSection }) {
+    const m = data.meta;
+    const [open, setOpen] = useState(false);
+    const secs = [
+      { id: "about", k: "navAbout" },
+      { id: "pathways", k: "navPathways" },
+      { id: "journey", k: "navJourney" },
+      { id: "subjects", k: "navSubjects" },
+      { id: "finder", k: "navFinder" },
+      { id: "equivalency", k: "navEquivalency" },
+      { id: "faq", k: "navFaq" },
+      { id: "dates", k: "navDates" },
+      { id: "contact", k: "navContact" }
+    ];
+    return (
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: NAVY, borderBottom: `3px solid ${GOLD}` }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <img src={EMBLEM} alt="AIS" style={{ width: 36, height: 36 }} />
+            <Editable value={m.navTitle} onChange={v => update(['meta', 'navTitle'], v)}
+              style={{ color: GOLD, fontWeight: 700, fontSize: 14 }} />
+          </div>
+          <button onClick={() => setOpen(!open)} style={{ background: "none", border: "none", color: "#fff", fontSize: 24, cursor: "pointer" }}>{open ? "✕" : "☰"}</button>
+        </div>
+        {open && (
+          <div style={{ background: NAVY, padding: "8px 16px 16px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+            {secs.map(s => (
+              <a key={s.id} href={`#${s.id}`} onClick={() => setOpen(false)}
+                style={{ display: "block", padding: "10px 8px", color: activeSection === s.id ? GOLD : "#ccc", textDecoration: "none", fontSize: 14, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <Editable value={m[s.k]} onChange={v => update(['meta', s.k], v)} />
+              </a>
+            ))}
+            <a href="#ask" onClick={() => setOpen(false)}
+              style={{ display: "block", marginTop: 8, padding: "10px 16px", background: GOLD, color: NAVY, textDecoration: "none", fontSize: 14, fontWeight: 700, borderRadius: 8, textAlign: "center" }}>
+              <Editable value={m.navAskBtn} onChange={v => update(['meta', 'navAskBtn'], v)} />
+            </a>
+          </div>
+        )}
+      </nav>
+    );
+  }
+
+  // ============ Section title ============
+  function SectionTitle({ children, sub, subPath, update }) {
+    return (
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 24, fontWeight: 800, color: NAVY, margin: 0, lineHeight: 1.2 }}>{children}</h2>
+        {sub && <Editable as="p" value={sub} onChange={v => update(subPath, v)}
+          style={{ color: "#666", fontSize: 14, marginTop: 6, lineHeight: 1.5 }} />}
+        <div style={{ width: 48, height: 3, background: GOLD, marginTop: 10, borderRadius: 2 }} />
+      </div>
+    );
+  }
+
+  // ============ Countdown ============
+  function Countdown() {
+    const [now, setNow] = useState(() => new Date());
+    useEffect(() => {
+      const id = setInterval(() => setNow(new Date()), 1000);
+      return () => clearInterval(id);
+    }, []);
+
+    const diff = EVENT_START.getTime() - now.getTime();
+    const isInProgress = diff <= 0 && now < EVENT_END;
+    const isPast = now >= EVENT_END;
+
+    if (isInProgress) {
+      return (
+        <div style={{ textAlign: 'center', padding: '8px 0' }}>
+          <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: NAVY }}>🎉 The event is happening now</p>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#666' }}>Welcome — please make your way to Gate 15</p>
+        </div>
+      );
+    }
+    if (isPast) {
+      return (
+        <div style={{ textAlign: 'center', padding: '8px 0' }}>
+          <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: NAVY }}>Thank you for joining us</p>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#666' }}>Hope to see you again soon</p>
+        </div>
+      );
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    const pad = (n) => String(n).padStart(2, '0');
+
+    const cell = {
+      background: '#fff',
+      borderRadius: 10,
+      padding: '14px 8px',
+      minWidth: 64,
+      flex: 1,
+      maxWidth: 100,
+      border: '1px solid #e0d8c8',
+      boxShadow: '0 2px 6px rgba(12, 45, 84, 0.06)'
+    };
+    const num = { fontSize: 32, fontWeight: 800, color: NAVY, lineHeight: 1, fontVariantNumeric: 'tabular-nums' };
+    const lbl = { fontSize: 10, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 6 };
+
+    return (
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 480, margin: '0 auto' }}>
+        <div style={cell}><div style={num}>{days}</div><div style={lbl}>Days</div></div>
+        <div style={cell}><div style={num}>{pad(hours)}</div><div style={lbl}>Hours</div></div>
+        <div style={cell}><div style={num}>{pad(minutes)}</div><div style={lbl}>Min</div></div>
+        <div style={cell}><div style={num}>{pad(seconds)}</div><div style={lbl}>Sec</div></div>
+      </div>
+    );
+  }
+
+  // ============ Add to Calendar ============
+  function AddToCalendar() {
+    const [open, setOpen] = useState(false);
+    const wrapRef = useRef(null);
+
+    useEffect(() => {
+      if (!open) return;
+      const onDoc = (e) => {
+        if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+      };
+      document.addEventListener('mousedown', onDoc);
+      return () => document.removeEventListener('mousedown', onDoc);
+    }, [open]);
+
+    // ICS-style timestamp: 20260429T140000Z
+    const fmtUTC = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
+    const googleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + encodeURIComponent(EVENT_TITLE)
+      + '&dates=' + fmtUTC(EVENT_START) + '/' + fmtUTC(EVENT_END)
+      + '&location=' + encodeURIComponent(EVENT_LOCATION)
+      + '&details=' + encodeURIComponent(EVENT_DESCRIPTION);
+
+    const outlookUrl = 'https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent'
+      + '&subject=' + encodeURIComponent(EVENT_TITLE)
+      + '&startdt=' + EVENT_START.toISOString()
+      + '&enddt=' + EVENT_END.toISOString()
+      + '&location=' + encodeURIComponent(EVENT_LOCATION)
+      + '&body=' + encodeURIComponent(EVENT_DESCRIPTION);
+
+    const downloadIcs = () => {
+      const escape = (s) => String(s).replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n');
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//AIS//Grade 9 Pathway Hub//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        'UID:ais-grade9-orientation-2026@ais.sch.sa',
+        'DTSTAMP:' + fmtUTC(new Date()),
+        'DTSTART:' + fmtUTC(EVENT_START),
+        'DTEND:' + fmtUTC(EVENT_END),
+        'SUMMARY:' + escape(EVENT_TITLE),
+        'LOCATION:' + escape(EVENT_LOCATION),
+        'DESCRIPTION:' + escape(EVENT_DESCRIPTION),
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'AIS-Grade9-Orientation-2026.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setOpen(false);
+    };
+
+    const optionStyle = {
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '11px 14px', textDecoration: 'none', color: NAVY,
+      fontSize: 13, fontWeight: 500, cursor: 'pointer',
+      background: 'none', border: 'none', width: '100%', textAlign: 'left',
+      fontFamily: 'inherit'
+    };
+
+    return (
+      <div ref={wrapRef} style={{ position: 'relative', display: 'inline-block' }}>
+        <button onClick={() => setOpen(!open)}
+          style={{
+            background: NAVY, color: '#fff', border: 'none',
+            padding: '12px 22px', borderRadius: 10,
+            fontSize: 14, fontWeight: 700, cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            fontFamily: 'inherit',
+            boxShadow: '0 2px 8px rgba(12, 45, 84, 0.18)'
+          }}>
+          📅 Add to Calendar <span style={{ fontSize: 10 }}>{open ? '▲' : '▼'}</span>
+        </button>
+        {open && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
+            background: '#fff', border: '1px solid #e0d8c8', borderRadius: 10,
+            boxShadow: '0 8px 24px rgba(12, 45, 84, 0.18)',
+            minWidth: 220, zIndex: 80, overflow: 'hidden'
+          }}
+          onMouseDown={(e) => e.stopPropagation()}>
+            <a href={googleUrl} target="_blank" rel="noopener noreferrer"
+               onClick={() => setOpen(false)} style={optionStyle}
+               onMouseEnter={(e) => e.currentTarget.style.background = LIGHT_GOLD}
+               onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+              <span style={{ fontSize: 18 }}>🟦</span> Google Calendar
+            </a>
+            <button onClick={downloadIcs} style={optionStyle}
+               onMouseEnter={(e) => e.currentTarget.style.background = LIGHT_GOLD}
+               onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+              <span style={{ fontSize: 18 }}>🍎</span> Apple Calendar (.ics)
+            </button>
+            <a href={outlookUrl} target="_blank" rel="noopener noreferrer"
+               onClick={() => setOpen(false)} style={optionStyle}
+               onMouseEnter={(e) => e.currentTarget.style.background = LIGHT_GOLD}
+               onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+              <span style={{ fontSize: 18 }}>📧</span> Outlook.com
+            </a>
+            <button onClick={downloadIcs} style={{ ...optionStyle, borderTop: '1px solid #f0e8d8', color: '#666' }}
+               onMouseEnter={(e) => e.currentTarget.style.background = LIGHT_GOLD}
+               onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+              <span style={{ fontSize: 18 }}>⬇️</span> Download .ics file
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ============ App root ============
+  function App() {
+    const [data, setData] = useState(INITIAL_DATA);
+    const [editing, setEditing] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
+    const [toast, setToast] = useState(null);
+    const [as_, setAs] = useState("about");
+    const [dirty, setDirty] = useState(false);
+
+    const update = useCallback((path, value) => {
+      setData(d => setAtPath(d, path, value));
+      setDirty(true);
+    }, []);
+
+    // Keep a ref to the latest data so save can use the freshest value
+    // even if a pending blur fires synchronously right before save.
+    const dataRef = useRef(data);
+    useEffect(() => { dataRef.current = data; }, [data]);
+
+    useEffect(() => {
+      const ob = new IntersectionObserver(
+        (e) => { e.forEach(en => { if (en.isIntersecting) setAs(en.target.id); }); },
+        { rootMargin: "-50% 0px", threshold: 0 }
+      );
+      document.querySelectorAll("section[id]").forEach(s => ob.observe(s));
+      return () => ob.disconnect();
+    }, []);
+
+    useEffect(() => {
+      document.body.classList.toggle('ed-on', editing);
+    }, [editing]);
+
+    useEffect(() => {
+      // Warn before leaving with unsaved changes
+      const handler = (e) => {
+        if (dirty) { e.preventDefault(); e.returnValue = ''; }
+      };
+      window.addEventListener('beforeunload', handler);
+      return () => window.removeEventListener('beforeunload', handler);
+    }, [dirty]);
+
+    const enterEdit = () => {
+      setEditing(true);
+      // Show help once per page load
+      if (!sessionStorage.getItem('aisHubHelpShown')) {
+        setShowHelp(true);
+        sessionStorage.setItem('aisHubHelpShown', '1');
+      }
+    };
+
+    const exitEdit = () => {
+      if (dirty && !confirm('Discard unsaved changes?')) return;
+      setEditing(false);
+      setShowHelp(false);
+      setData(INITIAL_DATA);
+      setDirty(false);
+    };
+
+    const saveAndDownload = () => {
+      // Commit any in-flight edit (the focused contentEditable hasn't blurred yet)
+      const ae = document.activeElement;
+      if (ae && ae.isContentEditable) ae.blur();
+      // Defer so React processes the resulting state update first
+      setTimeout(() => {
+        try {
+          const docClone = document.documentElement.cloneNode(true);
+          const dataScript = docClone.querySelector('#ais-site-data');
+          if (dataScript) {
+            dataScript.textContent = '\n' + JSON.stringify(dataRef.current, null, 2) + '\n';
+          }
+          const root = docClone.querySelector('#root');
+          if (root) root.innerHTML = '<div class="loading">Loading…</div>';
+          // Remove edit-mode body class from clone so saved file opens in view mode
+          docClone.querySelector('body')?.classList.remove('ed-on');
+          const html = '<!DOCTYPE html>\n' + docClone.outerHTML;
+          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          const stamp = new Date().toISOString().slice(0, 10);
+          a.download = `AIS-Pathway-Hub-${stamp}.html`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          setDirty(false);
+          setToast('Saved! New file downloaded.');
+          setTimeout(() => setToast(null), 3000);
+        } catch (err) {
+          alert('Save failed: ' + err.message);
+        }
+      }, 60);
+    };
+
+    const ss = { padding: "48px 16px 24px", maxWidth: 800, margin: "0 auto" };
+    const fw = { ...ss, background: "#fff", maxWidth: "100%", padding: "48px 16px" };
+
+    return (
+      <EditCtx.Provider value={{ editing }}>
+        {/* Edit toolbar */}
+        <div className={`ed-toolbar${editing ? '' : ' collapsed'}`}>
+          {!editing && (
+            <button className="pill-toggle" onClick={enterEdit}>✏️ Edit</button>
+          )}
+          {editing && (
+            <>
+              <span className="dot" />
+              <span className="label">EDITING {dirty ? '• unsaved' : ''}</span>
+              <button className="pill-save" onClick={saveAndDownload}>💾 Save & Download</button>
+              <button className="pill-discard" onClick={exitEdit}>Exit</button>
+            </>
+          )}
+        </div>
+
+        {showHelp && (
+          <div className="ed-help">
+            <h4>You're in Edit Mode</h4>
+            <div>Click any highlighted text to edit it. Press <strong>Enter</strong> to confirm or <strong>Esc</strong> to cancel a change. When done, click <strong>Save & Download</strong> to get the updated file. Send the file back to finalize.</div>
+            <button onClick={() => setShowHelp(false)}>Got it</button>
+          </div>
+        )}
+
+        {toast && <div className="ed-toast">{toast}</div>}
+
+        <div style={{ fontFamily: "'Poppins', sans-serif", background: LIGHT_BG, minHeight: "100vh", color: "#333" }}>
+          <NavBar data={data} update={update} activeSection={as_} />
+
+          {/* Hero */}
+          <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #143d6b 100%)`, padding: "80px 16px 48px", textAlign: "center" }}>
+            <img src={EMBLEM} alt="AIS" style={{ width: 80, height: 80, marginBottom: 16 }} />
+            <Editable as="h1" value={data.hero.title} onChange={v => update(['hero', 'title'], v)}
+              style={{ color: "#fff", fontSize: 22, fontWeight: 800, margin: "0 0 4px" }} />
+            <Editable as="p" value={data.hero.subtitle} onChange={v => update(['hero', 'subtitle'], v)}
+              style={{ color: GOLD, fontSize: 16, fontWeight: 600, margin: "0 0 20px" }} />
+            <Editable as="p" multiline value={data.hero.description} onChange={v => update(['hero', 'description'], v)}
+              style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, margin: "0 auto 24px", lineHeight: 1.5, maxWidth: 480 }} />
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <a href="#pathways" style={{ padding: "12px 24px", background: GOLD, color: NAVY, borderRadius: 8, textDecoration: "none", fontWeight: 700, fontSize: 14 }}>
+                <Editable value={data.hero.ctaPrimary} onChange={v => update(['hero', 'ctaPrimary'], v)} />
+              </a>
+              <a href="#finder" style={{ padding: "12px 24px", background: "transparent", color: "#fff", borderRadius: 8, textDecoration: "none", fontWeight: 600, fontSize: 14, border: "1px solid rgba(255,255,255,0.3)" }}>
+                <Editable value={data.hero.ctaSecondary} onChange={v => update(['hero', 'ctaSecondary'], v)} />
+              </a>
+            </div>
+          </div>
+
+          {/* Event banner */}
+          <div style={{ background: GOLD, padding: "14px 16px", textAlign: "center" }}>
+            <Editable as="p" value={data.eventBanner} onChange={v => update(['eventBanner'], v)}
+              style={{ margin: 0, color: NAVY, fontWeight: 700, fontSize: 14 }} />
+          </div>
+
+          {/* Countdown + Add to Calendar */}
+          <div style={{ background: LIGHT_GOLD, padding: "32px 16px 28px", textAlign: "center", borderBottom: "1px solid #e8e0d0" }}>
+            <p style={{ margin: "0 0 14px", fontSize: 11, fontWeight: 700, color: GOLD, textTransform: "uppercase", letterSpacing: 1.5 }}>
+              Countdown to the Event
+            </p>
+            <Countdown />
+            <div style={{ marginTop: 20 }}>
+              <AddToCalendar />
+            </div>
+          </div>
+
+          {/* About */}
+          <section id="about" style={ss}>
+            <SectionTitle sub={data.about.sectionSub} subPath={['about', 'sectionSub']} update={update}>
+              <Editable value={data.about.sectionTitle} onChange={v => update(['about', 'sectionTitle'], v)} />
+            </SectionTitle>
+            <div style={{ display: "grid", gap: 12 }}>
+              {data.about.items.map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: 14, background: "#fff", padding: 14, borderRadius: 10, border: "1px solid #e0d8c8" }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 8, background: `${NAVY}10`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <span style={{ color: NAVY, fontWeight: 800, fontSize: 16 }}>{String(i + 1).padStart(2, '0')}</span>
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                      <Editable value={item.time} onChange={v => update(['about', 'items', i, 'time'], v)}
+                        style={{ fontSize: 12, color: GOLD, fontWeight: 700 }} />
+                      <Editable value={item.heading} onChange={v => update(['about', 'items', i, 'heading'], v)}
+                        style={{ fontSize: 14, fontWeight: 700, color: NAVY }} />
+                    </div>
+                    <Editable as="p" multiline value={item.description} onChange={v => update(['about', 'items', i, 'description'], v)}
+                      style={{ fontSize: 13, color: "#666", margin: 0, lineHeight: 1.5 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Pathways */}
+          <section id="pathways" style={fw}>
+            <div style={{ maxWidth: 800, margin: "0 auto" }}>
+              <SectionTitle sub={data.pathways.sectionSub} subPath={['pathways', 'sectionSub']} update={update}>
+                <Editable value={data.pathways.sectionTitle} onChange={v => update(['pathways', 'sectionTitle'], v)} />
+              </SectionTitle>
+              <PathwayComparison data={data} update={update} />
+            </div>
+          </section>
+
+          {/* Journey */}
+          <section id="journey" style={ss}>
+            <SectionTitle sub={data.journey.sectionSub} subPath={['journey', 'sectionSub']} update={update}>
+              <Editable value={data.journey.sectionTitle} onChange={v => update(['journey', 'sectionTitle'], v)} />
+            </SectionTitle>
+            <JourneyMap data={data} update={update} />
+          </section>
+
+          {/* Subjects */}
+          <section id="subjects" style={fw}>
+            <div style={{ maxWidth: 800, margin: "0 auto" }}>
+              <SectionTitle sub={data.subjects.sectionSub} subPath={['subjects', 'sectionSub']} update={update}>
+                <Editable value={data.subjects.sectionTitle} onChange={v => update(['subjects', 'sectionTitle'], v)} />
+              </SectionTitle>
+              <SubjectExplorer data={data} update={update} />
+            </div>
+          </section>
+
+          {/* Finder */}
+          <section id="finder" style={{ ...ss, background: `linear-gradient(135deg, ${NAVY} 0%, #143d6b 100%)`, maxWidth: "100%", padding: "48px 16px" }}>
+            <div style={{ maxWidth: 800, margin: "0 auto" }}>
+              <div style={{ marginBottom: 24 }}>
+                <Editable as="h2" value={data.finder.sectionTitle} onChange={v => update(['finder', 'sectionTitle'], v)}
+                  style={{ fontSize: 24, fontWeight: 800, color: "#fff", margin: 0 }} />
+                <Editable as="p" value={data.finder.sectionSub} onChange={v => update(['finder', 'sectionSub'], v)}
+                  style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, marginTop: 6 }} />
+                <div style={{ width: 48, height: 3, background: GOLD, marginTop: 10, borderRadius: 2 }} />
+              </div>
+              <PathwayFinder data={data} update={update} />
+            </div>
+          </section>
+
+          {/* Equivalency */}
+          <section id="equivalency" style={ss}>
+            <SectionTitle sub={data.equivalency.sectionSub} subPath={['equivalency', 'sectionSub']} update={update}>
+              <Editable value={data.equivalency.sectionTitle} onChange={v => update(['equivalency', 'sectionTitle'], v)} />
+            </SectionTitle>
+            <EquivalencyGuide data={data} update={update} />
+          </section>
+
+          {/* FAQ */}
+          <section id="faq" style={fw}>
+            <div style={{ maxWidth: 800, margin: "0 auto" }}>
+              <SectionTitle sub={data.faq.sectionSub} subPath={['faq', 'sectionSub']} update={update}>
+                <Editable value={data.faq.sectionTitle} onChange={v => update(['faq', 'sectionTitle'], v)} />
+              </SectionTitle>
+              <FAQ data={data} update={update} />
+            </div>
+          </section>
+
+          {/* Dates */}
+          <section id="dates" style={ss}>
+            <SectionTitle sub={data.dates.sectionSub} subPath={['dates', 'sectionSub']} update={update}>
+              <Editable value={data.dates.sectionTitle} onChange={v => update(['dates', 'sectionTitle'], v)} />
+            </SectionTitle>
+            <div style={{ position: "relative", paddingLeft: 28 }}>
+              <div style={{ position: "absolute", left: 10, top: 8, bottom: 8, width: 2, background: `linear-gradient(to bottom, ${GOLD}, ${NAVY})` }} />
+              {data.dates.items.map((item, i) => (
+                <div key={i} style={{ position: "relative", marginBottom: 20 }}>
+                  <div style={{ position: "absolute", left: -22, top: 4, width: 12, height: 12, borderRadius: "50%", background: i === 0 ? GOLD : NAVY, border: `2px solid ${i === 0 ? NAVY : GOLD}` }} />
+                  <div style={{ background: "#fff", borderRadius: 10, padding: 14, border: "1px solid #e0d8c8" }}>
+                    <Editable value={item.date} onChange={v => update(['dates', 'items', i, 'date'], v)}
+                      style={{ fontSize: 12, fontWeight: 700, color: GOLD }} />
+                    <Editable as="h4" value={item.title} onChange={v => update(['dates', 'items', i, 'title'], v)}
+                      style={{ margin: "4px 0", color: NAVY, fontSize: 14 }} />
+                    <Editable as="p" multiline value={item.description} onChange={v => update(['dates', 'items', i, 'description'], v)}
+                      style={{ margin: 0, fontSize: 13, color: "#666", lineHeight: 1.5 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Ask */}
+          <section id="ask" style={{ ...ss, background: LIGHT_GOLD, maxWidth: "100%", padding: "48px 16px" }}>
+            <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
+              <Editable as="h2" value={data.ask.title} onChange={v => update(['ask', 'title'], v)}
+                style={{ fontSize: 24, fontWeight: 800, color: NAVY, margin: "0 0 8px" }} />
+              <Editable as="p" multiline value={data.ask.description} onChange={v => update(['ask', 'description'], v)}
+                style={{ color: "#666", fontSize: 14, marginTop: 0, marginBottom: 20, lineHeight: 1.5 }} />
+              <a href="#" style={{ display: "inline-block", padding: "14px 32px", background: NAVY, color: "#fff", borderRadius: 10, textDecoration: "none", fontWeight: 700, fontSize: 16 }}>
+                <Editable value={data.ask.buttonText} onChange={v => update(['ask', 'buttonText'], v)} />
+              </a>
+              <Editable as="p" value={data.ask.note} onChange={v => update(['ask', 'note'], v)}
+                style={{ fontSize: 12, color: "#999", marginTop: 12 }} />
+            </div>
+          </section>
+
+          {/* Contact */}
+          <section id="contact" style={ss}>
+            <SectionTitle sub={data.contact.sectionSub} subPath={['contact', 'sectionSub']} update={update}>
+              <Editable value={data.contact.sectionTitle} onChange={v => update(['contact', 'sectionTitle'], v)} />
+            </SectionTitle>
+            <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+              {data.contact.cards.map((c, i) => {
+                const accentColor = c.accent === 'gold' ? GOLD : NAVY;
+                return (
+                  <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 16, border: "1px solid #e0d8c8", borderTop: `3px solid ${accentColor}` }}>
+                    <Editable as="p" value={c.section} onChange={v => update(['contact', 'cards', i, 'section'], v)}
+                      style={{ fontSize: 11, fontWeight: 700, color: accentColor, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: 0.5 }} />
+                    <Editable as="p" value={c.name} onChange={v => update(['contact', 'cards', i, 'name'], v)}
+                      style={{ fontSize: 15, fontWeight: 700, color: NAVY, margin: "0 0 2px" }} />
+                    <Editable as="p" value={data.contact.roleLabel} onChange={v => update(['contact', 'roleLabel'], v)}
+                      style={{ fontSize: 12, color: "#888", margin: "0 0 8px" }} />
+                    <a href={`mailto:${c.email}`} style={{ fontSize: 13, color: NAVY, textDecoration: "none", fontWeight: 500 }}>
+                      📧 <Editable value={c.email} onChange={v => update(['contact', 'cards', i, 'email'], v)} />
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer style={{ background: NAVY, padding: "24px 16px", textAlign: "center" }}>
+            <img src={EMBLEM} alt="AIS" style={{ width: 40, height: 40, marginBottom: 8 }} />
+            <Editable as="p" value={data.footer.schoolName} onChange={v => update(['footer', 'schoolName'], v)}
+              style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, margin: "0 0 4px" }} />
+            <Editable as="p" value={data.footer.address} onChange={v => update(['footer', 'address'], v)}
+              style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, margin: "0 0 4px" }} />
+            <Editable as="p" value={data.footer.contact} onChange={v => update(['footer', 'contact'], v)}
+              style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, margin: 0 }} />
+          </footer>
+
+          {!editing && (
+            <a href="#ask" style={{ position: "fixed", bottom: 20, right: 20, width: 56, height: 56, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", textDecoration: "none", fontSize: 24, zIndex: 90, color: NAVY }}>❓</a>
+          )}
+        </div>
+      </EditCtx.Provider>
+    );
+  }
+
+  // Wait for Babel + React to be ready, then mount
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+})();
+</script>
+</body>
+</html>
