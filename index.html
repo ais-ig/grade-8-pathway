@@ -15,95 +15,6 @@
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Poppins', sans-serif; background: #f5f2ec; color: #333; }
 
-  /* Edit mode visual affordances */
-  .ed-on .editable {
-    cursor: text;
-    border-radius: 3px;
-    transition: background 0.15s, box-shadow 0.15s;
-    box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.35);
-    background: rgba(255, 248, 212, 0.4);
-    padding: 1px 3px;
-    margin: -1px -3px;
-  }
-  .ed-on .editable:hover {
-    background: rgba(255, 248, 212, 0.85);
-    box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.7);
-  }
-  .ed-on .editable:focus {
-    background: #fffae6;
-    box-shadow: 0 0 0 2px #c9a84c;
-    outline: none;
-  }
-  .editable[contenteditable="true"] { white-space: pre-wrap; word-break: break-word; }
-
-  /* Edit mode toolbar */
-  .ed-toolbar {
-    position: fixed; top: 8px; right: 8px; z-index: 200;
-    display: flex; gap: 6px; align-items: center;
-    background: #0c2d54; border: 2px solid #c9a84c;
-    border-radius: 24px; padding: 4px 6px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-    font-size: 12px; font-weight: 600;
-  }
-  .ed-toolbar button {
-    border: none; cursor: pointer;
-    padding: 6px 12px; border-radius: 18px;
-    font-family: inherit; font-size: 12px; font-weight: 600;
-    transition: background 0.15s, color 0.15s;
-  }
-  .ed-toolbar .pill-toggle {
-    background: #c9a84c; color: #0c2d54;
-  }
-  .ed-toolbar .pill-toggle.on { background: #fff; color: #0c2d54; }
-  .ed-toolbar .pill-save {
-    background: #fff; color: #0c2d54;
-  }
-  .ed-toolbar .pill-save:hover { background: #c9a84c; }
-  .ed-toolbar .pill-discard {
-    background: transparent; color: #fff;
-    border: 1px solid rgba(255,255,255,0.4);
-  }
-  .ed-toolbar .pill-discard:hover { border-color: #fff; }
-  .ed-toolbar .label {
-    color: #fff; padding: 0 8px; letter-spacing: 0.3px;
-  }
-  .ed-toolbar .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #c9a84c; margin: 0 4px;
-    box-shadow: 0 0 6px #c9a84c;
-  }
-  .ed-toolbar.collapsed { padding: 4px; }
-  .ed-toolbar.collapsed .pill-toggle { padding: 6px 10px; }
-
-  /* Help banner shown when first entering edit mode */
-  .ed-help {
-    position: fixed; top: 60px; right: 8px; z-index: 199;
-    max-width: 280px;
-    background: #fff; border: 1px solid #c9a84c;
-    border-radius: 10px; padding: 12px 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    font-size: 12px; line-height: 1.5; color: #333;
-  }
-  .ed-help h4 { margin: 0 0 6px; color: #0c2d54; font-size: 13px; }
-  .ed-help button {
-    margin-top: 8px; background: #0c2d54; color: #fff;
-    border: none; border-radius: 6px; padding: 6px 12px;
-    font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
-  }
-
-  /* Save toast */
-  .ed-toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #0c2d54; color: #fff;
-    padding: 10px 18px; border-radius: 24px;
-    border: 1px solid #c9a84c;
-    font-size: 13px; font-weight: 600;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-    z-index: 300;
-    animation: toastIn 0.3s ease;
-  }
-  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
-
   /* Loading state */
   .loading {
     display: flex; align-items: center; justify-content: center;
@@ -136,90 +47,85 @@
   "hero": {
     "title": "Grade 9 Curriculum Pathway",
     "subtitle": "Orientation Evening 2026",
-    "description": "Your guide to choosing between the British and American curriculum pathways at Al-Rowad International Schools",
+    "description": "Join us to explore the American and British pathways with your child and discover the route that fits them best.",
     "ctaPrimary": "Explore Pathways",
     "ctaSecondary": "Take the Quiz"
   },
-  "eventBanner": "📅 29 April 2026  |  🕐 5:00 – 7:30 PM  |  📍 AIS Campus",
+  "eventBanner": "📅 29 April 2026  |  🕐 6:00 – 8:00 PM  |  📍 AIS Campus, Gate 15",
   "about": {
     "sectionTitle": "About the Evening",
     "sectionSub": "What to expect at the Orientation Evening",
     "items": [
       {
-        "time": "5:00 PM",
+        "time": "6:00 PM",
         "heading": "Registration & Welcome",
-        "description": "Arrive at Gate 15. Student volunteers will guide you. Refreshments served."
-      },
-      {
-        "time": "5:30 PM",
-        "heading": "Curriculum Presentations",
-        "description": "Learn about both British and American pathways from our senior academic team."
-      },
-      {
-        "time": "5:50 PM",
-        "heading": "Q&A Session",
-        "description": "Ask questions about the curriculum and transition. Submit questions from your phone."
-      },
-      {
-        "time": "6:20 PM",
-        "heading": "Salah Break",
-        "description": "A break for prayer."
+        "description": "Registration desks at Gate 15. Volunteer students will guide you to the event area. Welcome refreshments served on arrival."
       },
       {
         "time": "6:30 PM",
-        "heading": "Subject Teachers' Stalls",
-        "description": "Visit subject booths, speak with teachers and current students, explore options."
+        "heading": "Welcome & Curriculum Presentations",
+        "description": "An introduction to the evening followed by presentations on the British (Cambridge IGCSE/A-Level) and American (SAT/ACT/AP) pathways."
+      },
+      {
+        "time": "6:55 PM",
+        "heading": "Q&A Session",
+        "description": "An interactive session for parents and students to ask about the transition, curriculum, extracurricular activities, and any other concerns."
+      },
+      {
+        "time": "7:15 PM",
+        "heading": "Subject Interaction Booths",
+        "description": "Visit booths set up by subject teachers and Heads of Departments. Options booklets available in print and digital. Current students and alumni share their experiences. Refreshments served."
       }
     ]
   },
   "pathways": {
-    "sectionTitle": "British vs American Pathway",
+    "sectionTitle": "American or British Pathway",
     "sectionSub": "Compare the two tracks side by side",
-    "headerBritish": "🇬🇧 British",
-    "headerAmerican": "🇺🇸 American",
+    "headerBritish": "🇺🇸 American",
+    "headerAmerican": "🇬🇧 British",
     "rows": [
       {
         "label": "Qualification",
-        "british": "Cambridge IGCSE + AS/A-Level",
-        "american": "American High School Diploma"
+        "british": "American High School Diploma",
+        "american": "Cambridge IGCSE + AS/A-Level"
       },
       {
         "label": "Duration",
-        "british": "IGCSE: 2 yrs (Gr 9–10)\nAS/A2: 2 yrs (Gr 11–12)",
-        "american": "4 years (Gr 9–12)"
+        "british": "4 years (Gr 9–12)",
+        "american": "IGCSE: 2 yrs (Gr 9–10)\nAS/A2: 2 yrs (Gr 11–12)"
       },
       {
         "label": "Assessment",
-        "british": "External exams at end of Gr 10 and Gr 11/12",
-        "american": "Continuous + semester exams + optional SAT/ACT/AP"
+        "british": "Continuous + semester exams + optional SAT/ACT/AP",
+        "american": "External exams at end of Gr 10 and Gr 11/12"
       },
       {
         "label": "Subjects at Gr 9",
-        "british": "8 IGCSE + 5 MoE subjects",
-        "american": "10–12 subjects per year"
+        "british": "10–12 subjects per year",
+        "american": "8 IGCSE + 5 MoE subjects"
       },
       {
         "label": "Specialisation",
-        "british": "Narrows to 3–4 at A-Level",
-        "american": "Broad throughout, AP for depth"
+        "british": "Broad throughout, AP for depth",
+        "american": "Narrows to 3–4 at A-Level"
       },
       {
         "label": "Exam Boards",
-        "british": "Cambridge, Edexcel, Oxford AQA",
-        "american": "School-based + College Board (SAT/AP)"
+        "british": "School-based + College Board (SAT/AP)",
+        "american": "Cambridge, Edexcel, Oxford AQA"
       },
       {
         "label": "Saudi University",
-        "british": "Accepted with mu'adala + GAT/SAAT",
-        "american": "Accepted with mu'adala + GAT/SAAT + EST"
+        "british": "Accepted with mu'adala + GAT/SAAT + EST",
+        "american": "Accepted with mu'adala + GAT/SAAT"
       }
     ]
   },
   "journey": {
     "sectionTitle": "Journey Map",
     "sectionSub": "The full Grade 9 through Grade 12 progression",
-    "tabBritish": "🇬🇧 British",
-    "tabAmerican": "🇺🇸 American",
+    "tabBritish": "🇺🇸 American",
+    "tabAmerican": "🇬🇧 British",
     "british": [
       {
         "grade": "Grade 9",
@@ -671,27 +577,27 @@
   "equivalency": {
     "sectionTitle": "Certificate Equivalency Guide",
     "sectionSub": "University recognition requirements by country",
-    "britishLabel": "🇬🇧 British Pathway",
-    "americanLabel": "🇺🇸 American Pathway",
+    "britishLabel": "🇺🇸 American Pathway",
+    "americanLabel": "🇬🇧 British Pathway",
     "disclaimer": "Requirements may change. Verify directly with the respective Ministry of Education.",
     "countries": {
       "saudi": {
         "flag": "🇸🇦",
         "name": "Saudi Arabia",
-        "british": "IGCSE + AS/A-Level accepted with valid school accreditation. Must pass GAT (Qudrat) and SAAT (Tahsili). Arabic and Islamic Studies maintained throughout.",
-        "american": "High School Diploma accepted with mu'adala. Must pass EST (mandatory Gr 12). GAT and SAAT also required."
+        "british": "High School Diploma accepted with mu'adala. Must pass EST (mandatory Gr 12). GAT and SAAT also required.",
+        "american": "IGCSE + AS/A-Level accepted with valid school accreditation. Must pass GAT (Qudrat) and SAAT (Tahsili). Arabic and Islamic Studies maintained throughout."
       },
       "jordan": {
         "flag": "🇯🇴",
         "name": "Jordan",
-        "british": "6 IGCSE (A–D) + 2 AS + 2 A2 or 3 AS + 1 A2. Arabic mandatory.",
-        "american": "6 EST (3 scientific, Math 2 required) or 3 EST + 1 AP. At least 3 years (G10–G12) in section."
+        "british": "6 EST (3 scientific, Math 2 required) or 3 EST + 1 AP. At least 3 years (G10–G12) in section.",
+        "american": "6 IGCSE (A–D) + 2 AS + 2 A2 or 3 AS + 1 A2. Arabic mandatory."
       },
       "egypt": {
         "flag": "🇪🇬",
         "name": "Egypt",
-        "british": "8 IGCSE + 2 AS or 1 A-Level.",
-        "american": "ACT 1 or SAT 1 + 2 ACT (II)."
+        "british": "ACT 1 or SAT 1 + 2 ACT (II).",
+        "american": "8 IGCSE + 2 AS or 1 A-Level."
       }
     }
   },
@@ -709,11 +615,11 @@
       },
       {
         "q": "What equivalency does my Jordanian child need?",
-        "a": "British: 6 IGCSE subjects (A–D) + 2 AS + 2 A2 or 3 AS + 1 A2, Arabic mandatory.\nAmerican: 6 EST (3 scientific, Math 2 required) or 3 EST + 1 AP. At least 3 years (G10–G12) in the section."
+        "a": "American: 6 EST (3 scientific, Math 2 required) or 3 EST + 1 AP. At least 3 years (G10–G12) in the section.\nBritish: 6 IGCSE subjects (A–D) + 2 AS + 2 A2 or 3 AS + 1 A2, Arabic mandatory."
       },
       {
         "q": "What equivalency does my Egyptian child need?",
-        "a": "British: 8 IGCSE + 2 AS or 1 A-Level.\nAmerican: ACT1 or SAT 1 + 2 ACT (II). Confirm directly with the Egyptian Ministry of Education."
+        "a": "American: ACT1 or SAT 1 + 2 ACT (II). Confirm directly with the Egyptian Ministry of Education.\nBritish: 8 IGCSE + 2 AS or 1 A-Level."
       },
       {
         "q": "What's the difference between Cambridge and Edexcel?",
@@ -725,7 +631,7 @@
       },
       {
         "q": "How many subjects will my child study?",
-        "a": "British: 40-period week with 8 IGCSE + 5 MoE subjects.\nAmerican: 10–12 subjects per year, accumulating credits towards the diploma."
+        "a": "American: 10–12 subjects per year, accumulating credits towards the diploma.\nBritish: 40-period week with 8 IGCSE + 5 MoE subjects."
       },
       {
         "q": "When are the IGCSE exams?",
@@ -733,7 +639,7 @@
       },
       {
         "q": "What happens after Grade 10?",
-        "a": "British: AS-Level (Gr 11) then A2 (Gr 12), specialising in 3–4 subjects.\nAmerican: Continue accumulating credits with optional AP courses in Gr 11–12."
+        "a": "American: Continue accumulating credits with optional AP courses in Gr 11–12.\nBritish: AS-Level (Gr 11) then A2 (Gr 12), specialising in 3–4 subjects."
       },
       {
         "q": "Is there a placement test?",
@@ -741,7 +647,7 @@
       },
       {
         "q": "Who should I contact?",
-        "a": "British Boys: Mr. Tariq Saeed – t.saeed@ais.sch.sa\nBritish Girls: Ms. Malak Rajeh – m.alkhasawna@ais.sch.sa\nAmerican Boys: Mr. Mazen Sheikh Alardh – m.sheikhalardh@ais.sch.sa\nAmerican Girls: Ms. Nilofer Masoom – n.masoom@ais.sch.sa"
+        "a": "American Boys: Mr. Mazen Sheikh Alardh – m.sheikhalardh@ais.sch.sa\nAmerican Girls: Ms. Nilofer Masoom – n.masoom@ais.sch.sa\nBritish Boys: Mr. Tariq Saeed – t.saeed@ais.sch.sa\nBritish Girls: Ms. Malak Rajeh – m.alkhasawna@ais.sch.sa"
       }
     ]
   },
@@ -752,27 +658,17 @@
       {
         "date": "29 April 2026",
         "title": "Orientation Evening",
-        "description": "Pathway presentations, Q&A, and subject stalls"
+        "description": "Curriculum pathway presentations, Q&A, and subject interaction booths. 6:00 – 8:00 PM at AIS Campus."
       },
       {
-        "date": "TBC",
-        "title": "Application Deadline",
-        "description": "Submit the Grade 9 Application Form"
+        "date": "6 May 2026",
+        "title": "Application Form Deadline",
+        "description": "Submit the Grade 9 Application Form."
       },
       {
-        "date": "TBC",
-        "title": "Placement Tests",
-        "description": "Diagnostic assessments for all students"
-      },
-      {
-        "date": "TBC",
+        "date": "13 May 2026",
         "title": "Feedback & Advice",
-        "description": "Personalised feedback sent via email"
-      },
-      {
-        "date": "TBC",
-        "title": "Final Selection",
-        "description": "Last date to confirm pathway choice"
+        "description": "Personalised feedback and advice sent to students via email."
       }
     ]
   },
@@ -788,18 +684,6 @@
     "roleLabel": "Deputy Head of School",
     "cards": [
       {
-        "section": "British (Boys)",
-        "name": "Mr. Tariq Saeed",
-        "email": "t.saeed@ais.sch.sa",
-        "accent": "navy"
-      },
-      {
-        "section": "British (Girls)",
-        "name": "Ms. Malak Rajeh",
-        "email": "m.alkhasawna@ais.sch.sa",
-        "accent": "navy"
-      },
-      {
         "section": "American (Boys)",
         "name": "Mr. Mazen Sheikh Alardh",
         "email": "m.sheikhalardh@ais.sch.sa",
@@ -810,6 +694,18 @@
         "name": "Ms. Nilofer Masoom",
         "email": "n.masoom@ais.sch.sa",
         "accent": "gold"
+      },
+      {
+        "section": "British (Boys)",
+        "name": "Mr. Tariq Saeed",
+        "email": "t.saeed@ais.sch.sa",
+        "accent": "navy"
+      },
+      {
+        "section": "British (Girls)",
+        "name": "Ms. Malak Rajeh",
+        "email": "m.alkhasawna@ais.sch.sa",
+        "accent": "navy"
       }
     ]
   },
@@ -823,14 +719,14 @@
 
 <script type="text/babel" data-presets="env,react">
 (function () {
-  const { useState, useEffect, useRef, useContext, createContext, useMemo, useCallback } = React;
+  const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
   const NAVY = "#0c2d54", GOLD = "#c9a84c", LIGHT_BG = "#f5f2ec", LIGHT_GOLD = "#fdf6e3";
 
   // ============ Event details (confirmed) ============
   // Used by countdown + Add-to-Calendar. If date changes, update here.
-  const EVENT_START = new Date('2026-04-29T17:00:00+03:00'); // 5:00 PM Riyadh
-  const EVENT_END = new Date('2026-04-29T19:30:00+03:00');
+  const EVENT_START = new Date('2026-04-29T18:00:00+03:00'); // 6:00 PM Riyadh
+  const EVENT_END = new Date('2026-04-29T20:00:00+03:00');
   const EVENT_TITLE = 'AIS Grade 9 Pathway Orientation Evening';
   const EVENT_LOCATION = 'Al-Rowad International Schools, An-Nuzhah, Riyadh';
   const EVENT_DESCRIPTION = "Curriculum pathway presentations, Q&A session, and subject teachers' stalls. Choose between British (IGCSE / A-Level) and American (High School Diploma) pathways.";
@@ -840,79 +736,11 @@
 
   const INITIAL_DATA = JSON.parse(document.getElementById('ais-site-data').textContent);
 
-  // ============ Edit context ============
-  const EditCtx = createContext({ editing: false });
-
-  // ============ Editable wrapper ============
-  // - When not in edit mode: plain text node
-  // - In edit mode: contentEditable, dashed outline on hover, commits on blur
-  function Editable({ value, onChange, as = 'span', className = '', style, multiline = false, placeholder = '' }) {
-    const { editing } = useContext(EditCtx);
-    const ref = useRef(null);
+  // ============ Text component (read-only) ============
+  function Editable({ value, as = 'span', className = '', style }) {
     const Tag = as;
-
-    // Sync DOM text from external value, but only when not focused
-    useEffect(() => {
-      if (!editing) return;
-      const el = ref.current;
-      if (!el) return;
-      if (document.activeElement === el) return;
-      const cur = el.innerText;
-      if (cur !== (value || '')) {
-        el.innerText = value || '';
-      }
-    });
-
-    if (!editing) {
-      // Render text with line breaks preserved if multiline
-      const text = value == null ? '' : String(value);
-      if (multiline) {
-        return React.createElement(Tag, { className, style }, text);
-      }
-      return React.createElement(Tag, { className, style }, text);
-    }
-
-    return React.createElement(Tag, {
-      ref,
-      className: (className + ' editable').trim(),
-      style,
-      contentEditable: true,
-      suppressContentEditableWarning: true,
-      'data-placeholder': placeholder,
-      onBlur: () => {
-        const v = ref.current.innerText;
-        if (v !== (value || '')) onChange(v);
-      },
-      onKeyDown: (e) => {
-        if (e.key === 'Enter' && !e.shiftKey && !multiline) {
-          e.preventDefault();
-          ref.current.blur();
-        }
-        // Esc: revert by blurring (we'll re-sync from value)
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          ref.current.innerText = value || '';
-          ref.current.blur();
-        }
-      },
-      onPaste: (e) => {
-        // Strip formatting on paste (avoid Word/Google Docs styles bleeding in)
-        e.preventDefault();
-        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-        if (document.queryCommandSupported && document.queryCommandSupported('insertText')) {
-          document.execCommand('insertText', false, text);
-        } else {
-          // Fallback: append at cursor via Selection API
-          const sel = window.getSelection();
-          if (sel && sel.rangeCount) {
-            const range = sel.getRangeAt(0);
-            range.deleteContents();
-            range.insertNode(document.createTextNode(text));
-            range.collapse(false);
-          }
-        }
-      }
-    });
+    const text = value == null ? '' : String(value);
+    return React.createElement(Tag, { className, style }, text);
   }
 
   // Helper: shallow update a path inside the data tree
@@ -1002,8 +830,8 @@
           <Editable as="p" value={f.pathwayFitLabel} onChange={v => update(['finder', 'pathwayFitLabel'], v)}
             style={{ fontSize: 12, color: "#888", margin: "0 0 6px", fontWeight: 600 }} />
           <div style={{ display: "flex", gap: 4, marginBottom: 8, height: 36, borderRadius: 8, overflow: "hidden" }}>
-            <div style={{ width: `${Math.max(bP, 10)}%`, background: NAVY, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 700 }}>🇬🇧 {bP}%</div>
             <div style={{ width: `${Math.max(aP, 10)}%`, background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", color: NAVY, fontSize: 12, fontWeight: 700 }}>🇺🇸 {aP}%</div>
+            <div style={{ width: `${Math.max(bP, 10)}%`, background: NAVY, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 700 }}>🇬🇧 {bP}%</div>
           </div>
           <Editable as="p" multiline value={f[rec]} onChange={v => update(['finder', rec], v)}
             style={{ fontSize: 14, color: "#333", lineHeight: 1.6, margin: "0 0 20px" }} />
@@ -1099,17 +927,17 @@
 
   // ============ Journey Map ============
   function JourneyMap({ data, update }) {
-    const [track, setTrack] = useState("british");
+    const [track, setTrack] = useState("american");
     const j = data.journey;
     const items = track === "british" ? j.british : j.american;
     const ts = (a) => ({ padding: "8px 20px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: a ? NAVY : "transparent", color: a ? "#fff" : NAVY });
     return (
       <div>
         <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-          <button style={ts(track === "british")} onClick={() => setTrack("british")}>
+          <button style={ts(track === "american")} onClick={() => setTrack("american")}>
             <Editable value={j.tabBritish} onChange={v => update(['journey', 'tabBritish'], v)} />
           </button>
-          <button style={ts(track === "american")} onClick={() => setTrack("american")}>
+          <button style={ts(track === "british")} onClick={() => setTrack("british")}>
             <Editable value={j.tabAmerican} onChange={v => update(['journey', 'tabAmerican'], v)} />
           </button>
         </div>
@@ -1141,20 +969,20 @@
   // ============ Subject Explorer ============
   function SubjectExplorer({ data, update }) {
     const s = data.subjects;
-    const [tab, setTab] = useState("igcse");
+    const [tab, setTab] = useState("am");
     const [exp, setExp] = useState(null);
     const ts = (a) => ({ padding: "8px 16px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: a ? NAVY : "transparent", color: a ? "#fff" : NAVY });
     return (
       <div>
         <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+          <button style={ts(tab === "am")} onClick={() => { setTab("am"); setExp(null); }}>
+            <Editable value={s.tabAm} onChange={v => update(['subjects', 'tabAm'], v)} />
+          </button>
           <button style={ts(tab === "igcse")} onClick={() => { setTab("igcse"); setExp(null); }}>
             <Editable value={s.tabIgcse} onChange={v => update(['subjects', 'tabIgcse'], v)} />
           </button>
           <button style={ts(tab === "moe")} onClick={() => { setTab("moe"); setExp(null); }}>
             <Editable value={s.tabMoe} onChange={v => update(['subjects', 'tabMoe'], v)} />
-          </button>
-          <button style={ts(tab === "am")} onClick={() => { setTab("am"); setExp(null); }}>
-            <Editable value={s.tabAm} onChange={v => update(['subjects', 'tabAm'], v)} />
           </button>
         </div>
         {tab === "igcse" && s.igcse.map((sub, i) => (
@@ -1556,21 +1384,11 @@
   // ============ App root ============
   function App() {
     const [data, setData] = useState(INITIAL_DATA);
-    const [editing, setEditing] = useState(false);
-    const [showHelp, setShowHelp] = useState(false);
-    const [toast, setToast] = useState(null);
     const [as_, setAs] = useState("about");
-    const [dirty, setDirty] = useState(false);
 
     const update = useCallback((path, value) => {
       setData(d => setAtPath(d, path, value));
-      setDirty(true);
     }, []);
-
-    // Keep a ref to the latest data so save can use the freshest value
-    // even if a pending blur fires synchronously right before save.
-    const dataRef = useRef(data);
-    useEffect(() => { dataRef.current = data; }, [data]);
 
     useEffect(() => {
       const ob = new IntersectionObserver(
@@ -1581,103 +1399,11 @@
       return () => ob.disconnect();
     }, []);
 
-    useEffect(() => {
-      document.body.classList.toggle('ed-on', editing);
-    }, [editing]);
-
-    useEffect(() => {
-      // Warn before leaving with unsaved changes
-      const handler = (e) => {
-        if (dirty) { e.preventDefault(); e.returnValue = ''; }
-      };
-      window.addEventListener('beforeunload', handler);
-      return () => window.removeEventListener('beforeunload', handler);
-    }, [dirty]);
-
-    const enterEdit = () => {
-      setEditing(true);
-      // Show help once per page load
-      if (!sessionStorage.getItem('aisHubHelpShown')) {
-        setShowHelp(true);
-        sessionStorage.setItem('aisHubHelpShown', '1');
-      }
-    };
-
-    const exitEdit = () => {
-      if (dirty && !confirm('Discard unsaved changes?')) return;
-      setEditing(false);
-      setShowHelp(false);
-      setData(INITIAL_DATA);
-      setDirty(false);
-    };
-
-    const saveAndDownload = () => {
-      // Commit any in-flight edit (the focused contentEditable hasn't blurred yet)
-      const ae = document.activeElement;
-      if (ae && ae.isContentEditable) ae.blur();
-      // Defer so React processes the resulting state update first
-      setTimeout(() => {
-        try {
-          const docClone = document.documentElement.cloneNode(true);
-          const dataScript = docClone.querySelector('#ais-site-data');
-          if (dataScript) {
-            dataScript.textContent = '\n' + JSON.stringify(dataRef.current, null, 2) + '\n';
-          }
-          const root = docClone.querySelector('#root');
-          if (root) root.innerHTML = '<div class="loading">Loading…</div>';
-          // Remove edit-mode body class from clone so saved file opens in view mode
-          docClone.querySelector('body')?.classList.remove('ed-on');
-          const html = '<!DOCTYPE html>\n' + docClone.outerHTML;
-          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          const stamp = new Date().toISOString().slice(0, 10);
-          a.download = `AIS-Pathway-Hub-${stamp}.html`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
-          setDirty(false);
-          setToast('Saved! New file downloaded.');
-          setTimeout(() => setToast(null), 3000);
-        } catch (err) {
-          alert('Save failed: ' + err.message);
-        }
-      }, 60);
-    };
-
     const ss = { padding: "48px 16px 24px", maxWidth: 800, margin: "0 auto" };
     const fw = { ...ss, background: "#fff", maxWidth: "100%", padding: "48px 16px" };
 
     return (
-      <EditCtx.Provider value={{ editing }}>
-        {/* Edit toolbar */}
-        <div className={`ed-toolbar${editing ? '' : ' collapsed'}`}>
-          {!editing && (
-            <button className="pill-toggle" onClick={enterEdit}>✏️ Edit</button>
-          )}
-          {editing && (
-            <>
-              <span className="dot" />
-              <span className="label">EDITING {dirty ? '• unsaved' : ''}</span>
-              <button className="pill-save" onClick={saveAndDownload}>💾 Save & Download</button>
-              <button className="pill-discard" onClick={exitEdit}>Exit</button>
-            </>
-          )}
-        </div>
-
-        {showHelp && (
-          <div className="ed-help">
-            <h4>You're in Edit Mode</h4>
-            <div>Click any highlighted text to edit it. Press <strong>Enter</strong> to confirm or <strong>Esc</strong> to cancel a change. When done, click <strong>Save & Download</strong> to get the updated file. Send the file back to finalize.</div>
-            <button onClick={() => setShowHelp(false)}>Got it</button>
-          </div>
-        )}
-
-        {toast && <div className="ed-toast">{toast}</div>}
-
-        <div style={{ fontFamily: "'Poppins', sans-serif", background: LIGHT_BG, minHeight: "100vh", color: "#333" }}>
+      <div style={{ fontFamily: "'Poppins', sans-serif", background: LIGHT_BG, minHeight: "100vh", color: "#333" }}>
           <NavBar data={data} update={update} activeSection={as_} />
 
           {/* Hero */}
@@ -1876,11 +1602,8 @@
               style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, margin: 0 }} />
           </footer>
 
-          {!editing && (
-            <a href="#ask" style={{ position: "fixed", bottom: 20, right: 20, width: 56, height: 56, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", textDecoration: "none", fontSize: 24, zIndex: 90, color: NAVY }}>❓</a>
-          )}
+          <a href="#ask" style={{ position: "fixed", bottom: 20, right: 20, width: 56, height: 56, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", textDecoration: "none", fontSize: 24, zIndex: 90, color: NAVY }}>❓</a>
         </div>
-      </EditCtx.Provider>
     );
   }
 
