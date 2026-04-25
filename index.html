@@ -13,7 +13,7 @@
 <style>
   html { scroll-behavior: smooth; }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Poppins', sans-serif; background: #f5f2ec; color: #333; }
+  body { margin: 0; font-family: 'Poppins', sans-serif; background: #fefcf4; color: #333; }
 
   /* Loading state */
   .loading {
@@ -42,37 +42,37 @@
     "navFaq": "FAQ",
     "navDates": "Dates",
     "navContact": "Contact",
-    "navAskBtn": "Ask a Question"
+    "navAskBtn": "Apply Now"
   },
   "hero": {
     "title": "Grade 9 Curriculum Pathway",
     "subtitle": "Orientation Evening 2026",
     "description": "Join us to explore the American and British pathways with your child and discover the route that fits them best.",
-    "ctaPrimary": "Explore Pathways",
-    "ctaSecondary": "Take the Quiz"
+    "ctaPrimary": "Submit Application",
+    "ctaSecondary": "Explore Pathways"
   },
-  "eventBanner": "📅 29 April 2026  |  🕐 6:00 – 8:00 PM  |  📍 AIS Campus, Gate 15",
+  "eventBanner": "📅 Wednesday, 29 April 2026  |  🕐 6:30 – 8:30 PM  |  📍 AIS Campus, Gate 15",
   "about": {
     "sectionTitle": "About the Evening",
     "sectionSub": "What to expect at the Orientation Evening",
     "items": [
       {
-        "time": "6:00 PM",
+        "time": "6:30 PM",
         "heading": "Registration & Welcome",
         "description": "Registration desks at Gate 15. Volunteer students will guide you to the event area. Welcome refreshments served on arrival."
       },
       {
-        "time": "6:30 PM",
+        "time": "7:00 PM",
         "heading": "Welcome & Curriculum Presentations",
-        "description": "An introduction to the evening followed by presentations on the British (Cambridge IGCSE/A-Level) and American (SAT/ACT/AP) pathways."
+        "description": "An introduction to the evening followed by presentations on the American (SAT/ACT/AP) and British (Cambridge IGCSE/A-Level) pathways."
       },
       {
-        "time": "6:55 PM",
+        "time": "7:25 PM",
         "heading": "Q&A Session",
         "description": "An interactive session for parents and students to ask about the transition, curriculum, extracurricular activities, and any other concerns."
       },
       {
-        "time": "7:15 PM",
+        "time": "7:45 PM",
         "heading": "Subject Interaction Booths",
         "description": "Visit booths set up by subject teachers and Heads of Departments. Options booklets available in print and digital. Current students and alumni share their experiences. Refreshments served."
       }
@@ -658,7 +658,7 @@
       {
         "date": "29 April 2026",
         "title": "Orientation Evening",
-        "description": "Curriculum pathway presentations, Q&A, and subject interaction booths. 6:00 – 8:00 PM at AIS Campus."
+        "description": "Curriculum pathway presentations, Q&A, and subject interaction booths. 6:30 – 8:30 PM at AIS Campus."
       },
       {
         "date": "6 May 2026",
@@ -674,9 +674,9 @@
   },
   "ask": {
     "title": "Have a Question?",
-    "description": "Submit before, during, or after the event. Our team will respond directly.",
-    "buttonText": "Submit a Question →",
-    "note": "Google Form link will be added here"
+    "description": "Whether you are preparing ahead of the evening, asking during the live Q&A, or following up afterwards, please do not hesitate to reach out.",
+    "buttonText": "Submit Your Question →",
+    "note": ""
   },
   "contact": {
     "sectionTitle": "Contact Us",
@@ -713,6 +713,14 @@
     "schoolName": "Al-Rowad International Schools",
     "address": "An-Nuzhah, Riyadh 11673, KSA",
     "contact": "info@ais.sch.sa  |  +966 9200 13260"
+  },
+  "apply": {
+    "sectionTitle": "Ready to Apply?",
+    "sectionSub": "Submit the Grade 9 Application Form to confirm your child's pathway for 2026–2027",
+    "deadline": "📌 Application deadline: 6 May 2026",
+    "buttonText": "Open Application Form →",
+    "helpText": "You will need your child's full name, student number, your preferred pathway (American or British), and a parent mobile number.",
+    "note": "The form takes about 2 minutes to complete."
   }
 }
 </script>
@@ -721,12 +729,12 @@
 (function () {
   const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
-  const NAVY = "#0c2d54", GOLD = "#c9a84c", LIGHT_BG = "#f5f2ec", LIGHT_GOLD = "#fdf6e3";
+  const NAVY = "#0c2d54", GOLD = "#EDBA1D", LIGHT_BG = "#fefcf4", LIGHT_GOLD = "#fdf3d4";
 
   // ============ Event details (confirmed) ============
   // Used by countdown + Add-to-Calendar. If date changes, update here.
-  const EVENT_START = new Date('2026-04-29T18:00:00+03:00'); // 6:00 PM Riyadh
-  const EVENT_END = new Date('2026-04-29T20:00:00+03:00');
+  const EVENT_START = new Date('2026-04-29T18:30:00+03:00'); // 6:30 PM Riyadh
+  const EVENT_END = new Date('2026-04-29T20:30:00+03:00');
   const EVENT_TITLE = 'AIS Grade 9 Pathway Orientation Evening';
   const EVENT_LOCATION = 'Al-Rowad International Schools, An-Nuzhah, Riyadh';
   const EVENT_DESCRIPTION = "Curriculum pathway presentations, Q&A session, and subject teachers' stalls. Choose between British (IGCSE / A-Level) and American (High School Diploma) pathways.";
@@ -1182,7 +1190,7 @@
                 <Editable value={m[s.k]} onChange={v => update(['meta', s.k], v)} />
               </a>
             ))}
-            <a href="#ask" onClick={() => setOpen(false)}
+            <a href="https://forms.gle/5jxSbPWD9rLgQn4h6" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}
               style={{ display: "block", marginTop: 8, padding: "10px 16px", background: GOLD, color: NAVY, textDecoration: "none", fontSize: 14, fontWeight: 700, borderRadius: 8, textAlign: "center" }}>
               <Editable value={m.navAskBtn} onChange={v => update(['meta', 'navAskBtn'], v)} />
             </a>
@@ -1407,28 +1415,28 @@
           <NavBar data={data} update={update} activeSection={as_} />
 
           {/* Hero */}
-          <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #143d6b 100%)`, padding: "80px 16px 48px", textAlign: "center" }}>
+          <div style={{ background: GOLD, padding: "80px 16px 48px", textAlign: "center" }}>
             <img src={EMBLEM} alt="AIS" style={{ width: 80, height: 80, marginBottom: 16 }} />
             <Editable as="h1" value={data.hero.title} onChange={v => update(['hero', 'title'], v)}
-              style={{ color: "#fff", fontSize: 22, fontWeight: 800, margin: "0 0 4px" }} />
+              style={{ color: NAVY, fontSize: 26, fontWeight: 800, margin: "0 0 4px" }} />
             <Editable as="p" value={data.hero.subtitle} onChange={v => update(['hero', 'subtitle'], v)}
-              style={{ color: GOLD, fontSize: 16, fontWeight: 600, margin: "0 0 20px" }} />
+              style={{ color: NAVY, fontSize: 16, fontWeight: 600, margin: "0 0 20px", opacity: 0.8 }} />
             <Editable as="p" multiline value={data.hero.description} onChange={v => update(['hero', 'description'], v)}
-              style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, margin: "0 auto 24px", lineHeight: 1.5, maxWidth: 480 }} />
+              style={{ color: NAVY, fontSize: 14, margin: "0 auto 24px", lineHeight: 1.6, maxWidth: 480, opacity: 0.85 }} />
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-              <a href="#pathways" style={{ padding: "12px 24px", background: GOLD, color: NAVY, borderRadius: 8, textDecoration: "none", fontWeight: 700, fontSize: 14 }}>
+              <a href="https://forms.gle/5jxSbPWD9rLgQn4h6" target="_blank" rel="noopener noreferrer" style={{ padding: "12px 24px", background: NAVY, color: "#fff", borderRadius: 8, textDecoration: "none", fontWeight: 700, fontSize: 14 }}>
                 <Editable value={data.hero.ctaPrimary} onChange={v => update(['hero', 'ctaPrimary'], v)} />
               </a>
-              <a href="#finder" style={{ padding: "12px 24px", background: "transparent", color: "#fff", borderRadius: 8, textDecoration: "none", fontWeight: 600, fontSize: 14, border: "1px solid rgba(255,255,255,0.3)" }}>
+              <a href="#pathways" style={{ padding: "12px 24px", background: "transparent", color: NAVY, borderRadius: 8, textDecoration: "none", fontWeight: 600, fontSize: 14, border: `2px solid ${NAVY}` }}>
                 <Editable value={data.hero.ctaSecondary} onChange={v => update(['hero', 'ctaSecondary'], v)} />
               </a>
             </div>
           </div>
 
           {/* Event banner */}
-          <div style={{ background: GOLD, padding: "14px 16px", textAlign: "center" }}>
+          <div style={{ background: NAVY, padding: "14px 16px", textAlign: "center" }}>
             <Editable as="p" value={data.eventBanner} onChange={v => update(['eventBanner'], v)}
-              style={{ margin: 0, color: NAVY, fontWeight: 700, fontSize: 14 }} />
+              style={{ margin: 0, color: "#fff", fontWeight: 700, fontSize: 14 }} />
           </div>
 
           {/* Countdown + Add to Calendar */}
@@ -1551,6 +1559,26 @@
             </div>
           </section>
 
+          {/* Apply — main CTA */}
+          <section id="apply" style={{ ...ss, background: NAVY, maxWidth: "100%", padding: "56px 16px" }}>
+            <div style={{ maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+              <Editable as="h2" value={data.apply.sectionTitle} onChange={v => update(['apply', 'sectionTitle'], v)}
+                style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 10px" }} />
+              <Editable as="p" multiline value={data.apply.sectionSub} onChange={v => update(['apply', 'sectionSub'], v)}
+                style={{ color: "rgba(255,255,255,0.75)", fontSize: 15, margin: "0 0 16px", lineHeight: 1.6 }} />
+              <Editable as="p" value={data.apply.deadline} onChange={v => update(['apply', 'deadline'], v)}
+                style={{ color: GOLD, fontSize: 16, fontWeight: 700, margin: "0 0 28px" }} />
+              <a href="https://forms.gle/5jxSbPWD9rLgQn4h6" target="_blank" rel="noopener noreferrer"
+                style={{ display: "inline-block", padding: "18px 48px", background: GOLD, color: NAVY, borderRadius: 12, textDecoration: "none", fontWeight: 800, fontSize: 18, boxShadow: "0 4px 16px rgba(237,186,29,0.35)" }}>
+                <Editable value={data.apply.buttonText} onChange={v => update(['apply', 'buttonText'], v)} />
+              </a>
+              <Editable as="p" multiline value={data.apply.helpText} onChange={v => update(['apply', 'helpText'], v)}
+                style={{ color: "rgba(255,255,255,0.55)", fontSize: 12, marginTop: 20, lineHeight: 1.6, maxWidth: 420, marginLeft: "auto", marginRight: "auto" }} />
+              <Editable as="p" value={data.apply.note} onChange={v => update(['apply', 'note'], v)}
+                style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 8 }} />
+            </div>
+          </section>
+
           {/* Ask */}
           <section id="ask" style={{ ...ss, background: LIGHT_GOLD, maxWidth: "100%", padding: "48px 16px" }}>
             <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
@@ -1558,7 +1586,7 @@
                 style={{ fontSize: 24, fontWeight: 800, color: NAVY, margin: "0 0 8px" }} />
               <Editable as="p" multiline value={data.ask.description} onChange={v => update(['ask', 'description'], v)}
                 style={{ color: "#666", fontSize: 14, marginTop: 0, marginBottom: 20, lineHeight: 1.5 }} />
-              <a href="#" style={{ display: "inline-block", padding: "14px 32px", background: NAVY, color: "#fff", borderRadius: 10, textDecoration: "none", fontWeight: 700, fontSize: 16 }}>
+              <a href="https://forms.gle/n7tLEw9q5VdzvrqX7" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "14px 32px", background: NAVY, color: "#fff", borderRadius: 10, textDecoration: "none", fontWeight: 700, fontSize: 16 }}>
                 <Editable value={data.ask.buttonText} onChange={v => update(['ask', 'buttonText'], v)} />
               </a>
               <Editable as="p" value={data.ask.note} onChange={v => update(['ask', 'note'], v)}
@@ -1602,7 +1630,7 @@
               style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, margin: 0 }} />
           </footer>
 
-          <a href="#ask" style={{ position: "fixed", bottom: 20, right: 20, width: 56, height: 56, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", textDecoration: "none", fontSize: 24, zIndex: 90, color: NAVY }}>❓</a>
+          <a href="https://forms.gle/5jxSbPWD9rLgQn4h6" target="_blank" rel="noopener noreferrer" style={{ position: "fixed", bottom: 20, right: 20, height: 48, borderRadius: 24, background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(12,45,84,0.3)", textDecoration: "none", fontSize: 13, fontWeight: 800, zIndex: 90, color: NAVY, padding: "0 22px", gap: 6, border: `2px solid ${NAVY}` }}>📝 Apply Now</a>
         </div>
     );
   }
